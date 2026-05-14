@@ -1,8 +1,16 @@
 const { MongoClient } = require('mongodb');
 const { randomUUID } = require('crypto');
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
-const MONGODB_URI = "mongodb+srv://lamineg049_db_user:FCOE4xmVMhWjnFz0@opsmind.2ylt0ve.mongodb.net/?retryWrites=true&w=majority&appName=opsmind";
-const DATABASE_NAME = "opsmind";
+const MONGODB_URI = process.env.MONGODB_URI;
+const DATABASE_NAME = process.env.MONGODB_DB_NAME || "opsmind";
+
+if (!MONGODB_URI) {
+  console.error("❌ MONGODB_URI not found in .env file");
+  process.exit(1);
+}
+
 
 async function seed() {
   console.log("🚀 Seeding historical decisions (Standalone JS)...");

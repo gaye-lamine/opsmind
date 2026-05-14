@@ -1,0 +1,28 @@
+{
+  "name": "@opsmind/mcp-server",
+  "version": "1.0.0",
+  "description": "OpsMind MCP Server — exposes OpsMind tools via the Model Context Protocol",
+  "main": "./dist/index.js",
+  "bin": {
+    "opsmind-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch --onSuccess \"node dist/index.js\"",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "@opsmind/config": "workspace:*",
+    "@opsmind/memory": "workspace:*",
+    "@opsmind/shared": "workspace:*",
+    "@opsmind/tools": "workspace:*",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.18",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  }
+}

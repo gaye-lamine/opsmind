@@ -1,0 +1,17 @@
+{
+  "name": "@opsmind/scripts",
+  "version": "1.0.0",
+  "description": "OpsMind utility scripts",
+  "private": true,
+  "scripts": {
+    "seed": "tsx seed-operational-state.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "mongodb": "^6.8.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.4",
+    "typescript": "^6.0.3"
+  }
+}

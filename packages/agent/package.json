@@ -1,0 +1,32 @@
+{
+  "name": "@opsmind/agent",
+  "version": "1.0.0",
+  "description": "OpsMind autonomous runtime layer — orchestrator, execution loop, workflows, state management",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@opsmind/ai": "workspace:*",
+    "@opsmind/config": "workspace:*",
+    "@opsmind/mcp-client": "workspace:*",
+    "@opsmind/memory": "workspace:*",
+    "@opsmind/shared": "workspace:*",
+    "@opsmind/tools": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  }
+}

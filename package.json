@@ -1,0 +1,36 @@
+{
+  "name": "opsmind",
+  "version": "1.0.0",
+  "description": "OpsMind — Autonomous Operational Intelligence Agent",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "typecheck": "turbo typecheck",
+    "lint": "turbo lint",
+    "clean": "turbo clean && find . -name 'dist' -not -path '*/node_modules/*' -exec rm -rf {} + 2>/dev/null; true",
+    "api": "pnpm --filter @opsmind/api dev",
+    "web": "pnpm --filter @opsmind/web dev",
+    "mcp": "pnpm --filter @opsmind/mcp-server dev",
+    "seed": "pnpm --filter @opsmind/scripts seed"
+  },
+  "keywords": [
+    "opsmind",
+    "ai-agent",
+    "operational-intelligence",
+    "gemini",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^10.3.0",
+    "prettier": "^3.8.3",
+    "tsup": "^8.5.1",
+    "turbo": "^2.9.10",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "mongodb": "^6.21.0"
+  }
+}

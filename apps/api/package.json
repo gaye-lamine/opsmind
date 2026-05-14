@@ -1,0 +1,31 @@
+{
+  "name": "@opsmind/api",
+  "version": "1.0.0",
+  "description": "OpsMind API server — Express routes, controllers, middleware",
+  "main": "./dist/server/index.js",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/server/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@opsmind/agent": "workspace:*",
+    "@opsmind/config": "workspace:*",
+    "@opsmind/memory": "workspace:*",
+    "@opsmind/shared": "workspace:*",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "mongodb": "^6.8.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.15.18",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  }
+}

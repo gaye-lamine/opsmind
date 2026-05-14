@@ -1,0 +1,265 @@
+c'est pour le hackaton de "Google Cloud Rapid Agent Hackathon" voici le hackaton : About the challenge
+AI that doesn't just provide answers—it helps you take action.
+
+Building Agents for Real-World Challenges is your opportunity to move beyond the chatbot and into the world of agents that accomplish tasks for you. This hackathon is designed for every level of technical builder: whether you are writing your first script or architecting complex systems, this is your chance to build an agent that can reason, plan, and execute tasks under your oversight.
+
+Built with Gemini’s advanced reasoning and our technology partners' solutions, you will create agents that help people get more done. You provide the logic; Gemini provides the brain; our partners provide the superpowers.
+
+Turn your ideas into agents that solve real-world problems.
+
+ 
+
+Partners
+Six partner tracks are now live. Pick one and build with their MCP server:
+
+Arize
+Elastic
+Fivetran
+GitLab
+MongoDB
+Dynatrace
+The "Partner Bucket" System
+There are three identical prize buckets—one for each of our featured partner tracks. Instead of everyone competing for one giant pile of money, you are competing within the specific "bucket" of the partner technology you used.
+
+Prize Tier Amount (Per Partner Bucket):🥇 1st Place $5,000🥈 2nd Place $3,000🥉 3rd Place $2,000
+
+How to Qualify
+Pick a Partner: Choose the partner technology that best fits the mission you want to accomplish.
+Build Your Agent: Create your agent—built with Gemini 3—using Google Cloud Agent Builder. Integrate the partner’s Model Context Protocol (MCP) server to give your agent the superpowers to finish the job.
+Win Your Track: You’ll be judged specifically against other builders within that same partner category.
+Requirements
+The Challenge
+Your mission is to engineer a functional agent that solves a real-world challenge—specifically targeting your work, personal life, hobbies, or daily routines. We want to see how AI can tackle real-world problems.
+
+Your Goals:
+
+Move Beyond Chat: Your agent shouldn't just answer questions. It should use tools and capabilities to accomplish tasks (e.g., managing a local database, automating a hobbyist workflow, or interacting with a live web service).
+The Multi-Step Mission: Build a system that can handle complex goals. Your agent should be able to plan the steps and use the tools at its disposal to finish the job, while keeping you in control.
+Partner Power: Your solution must demonstrate a meaningful integration with at least one participating partner’s solution using MCP to give your agent its "superpowers."
+How to Build:
+
+Google Cloud Agent Builder: Ideal for rapid prototyping, building, and scaling. Use this low-code, high-power environment to build and orchestrate agents with grounding in your own data.
+ 
+What to Build
+💥 Build a functional agent—powered by Gemini and Google Cloud Agent Builder—that integrates a Partner Entity’s MCP server to solve a real challenge.
+
+ 
+What to Submit
+Include a URL to the hosted Project
+Include a URL to your open-source code repository for judging and testing. 
+The repository must be public and include a complete open source license file. This license should be detectable and visible at the top of the repository page (in the About section)
+Include a ~3 minute demo video
+Select which track you’ll be submitting to
+Your completed Devpost submission form
+Prizes
+$60,000 in prizes
+Arize - 1st Place
+$5,000 in cash
+1 winner
+Elastic - 1st Place
+$5,000 in cash
+1 winner
+Arize - 2nd Place
+$3,000 in cash
+1 winner
+Elastic - 2nd Place
+$3,000 in cash
+1 winner
+Arize - 3rd Place
+$2,000 in cash
+1 winner
+Elastic - 3rd Place
+$2,000 in cash
+1 winner
+Fivetran - 1st Place
+$5,000 in cash
+1 winner
+GitLab - 1st Place
+$5,000 in cash
+1 winner
+Fivetran - 2nd Place
+$3,000 in cash
+1 winner
+GitLab - 2nd Place
+$3,000 in cash
+1 winner
+Fivetran - 3rd Place
+$2,000 in cash
+1 winner
+GitLab - 3rd Place
+$2,000 in cash
+1 winner
+MongoDB - 1st Place
+$5,000 in cash
+1 winner
+Dynatrace - 1st Place
+$5,000 in cash
+1 winner
+MongoDB - 2nd Place
+$3,000 in cash
+1 winner
+Dynatrace - 2nd Place
+$3,000 in cash
+1 winner
+MongoDB - 3rd Place
+$2,000 in cash
+1 winner
+Dynatrace - 3rd Place
+$2,000 in cash
+1 winner
+Devpost Achievements
+Submitting to this hackathon could earn you:
+
+
+X Hackathons
+ level 4
+
+Hackathon Winner
+ level 1
+Judges
+Richard Young
+Richard Young
+Director of Partner Solutions | Arize
+
+Clay Miner
+Clay Miner
+Head of Solutions Strategy | Arize
+
+Anish Mathur
+Anish Mathur
+Director of Product Management | Elastic
+
+Philipp Krenn
+Philipp Krenn
+Director, Developer Relations | Elastic
+
+Elijah Davis
+Elijah Davis
+Lead Solution Architect, Enterprise | Fivetran
+
+Andrew Madson
+Andrew Madson
+Principal, Developer Relations | Fivetran
+
+Regnard Raquedan
+Regnard Raquedan
+Senior Solutions Architect | GitLab
+
+Nick Veenhof
+Nick Veenhof
+Director, Contributor Success | GitLab
+
+Daoud Farooqi
+Daoud Farooqi
+Partner Solutions Architect | MongoDB
+
+Gaurab Aryal
+Gaurab Aryal
+Senior Product Manager | MongoDB
+
+Sean O’Dell
+Sean O’Dell
+Principal PMM, Developer Experience | Dynatrace
+
+Jeff Blankenburg
+Jeff Blankenburg
+Principal Developer Advocate | Dynatrace
+
+Khushan Adatiya
+Khushan Adatiya
+Senior Software Engineer | Google
+
+Rich Deken
+Rich Deken
+Cloud Partner Engineer, Global Business | Google
+
+Jess Ambriz
+Jess Ambriz
+Cloud Partner Engineer, Global Business | Google
+
+Jon Pawlowski
+Jon Pawlowski
+Partner Engineer III, ISV, Data Management | Google
+
+Saurabh Kumar
+Saurabh Kumar
+ISV Partner Engineer, Global Business | Google
+
+George Keller
+George Keller
+Cloud Partner Engineer, Global Business | Google
+
+Merlin Yamssi
+Merlin Yamssi
+Lead Solutions Consultant, Cloud Partner Engineering | Google
+
+Judging Criteria
+Technological Implementation
+Does the interaction with Google Cloud and Partner services demonstrate quality software development?
+Design
+Is the user experience and design of the project well thought out?
+Potential Impact
+How big of an impact could the project have on target communities?
+Quality of the Idea
+How creative and unique is the project?
+moi j'ai choisi mongoDB comme partner , 
+on nous a donner bcp de ressource :
+🛠 Phase 1: Core Frameworks & Environment
+The first step is choosing your build environment. Whether you want a managed platform or a local setup, start here.
+
+
+Managed Setup: Gemini Enterprise Agent Platform API Setup – The essential mission control for all Google Cloud agent projects.
+The Low-Code Path:Agent Builder Guide – Best for rapid development using managed orchestration, grounding, and enterprise data stores.
+Developer SDK:Gemini Enterprise Agent Platform SDK for Python – The client library required for writing custom agent logic and handling tool calls.
+Agent Starter Pack
+You can get access to Google Cloud in two ways:
+
+Sign up for a no-cost trial at cloud.google.com/free
+Use an existing Google Cloud account and request $100 in credits: https://forms.gle/xfv9vQzfRfNCCVbG7 (approved within 1–5 business days)
+ 
+🔗 Phase 2: Action Mechanisms & Data Connectivity
+Agents need to "do" things and "know" things. Use these resources to give your agent agency over data and tools.
+
+Core Action Mechanisms (Tool Use)
+Agent Builder Extensions: Building & Managing Extensions – Use pre-built Google extensions or connect your managed agent to any external API.
+Knowledge & Grounding
+Agent Builder Data Stores: Agent Search and Agent Conversation Overview – Use this unified platform to index your PDFs, websites, or BigQuery tables and give your managed agent a "source of truth."
+ 
+🧰 Phase 3: Partner Integration & Infrastructure
+Click each link below for Partner-specific information and resources:
+
+Arize
+Elastic
+Fivetran
+GitLab
+MongoDB
+Dynatrace
+ 
+🧠 Phase 4: Reasoning, State, & Logic Hosting
+Complex missions require memory and a place for your code to live.
+
+Managed Orchestration: Agent Runtime – A runtime for deploying Python-based agents (LangChain/LlamaIndex) built with Agent Builder or the SDK.
+State & Secrets: Secret Manager – Securely store and retrieve API keys for your partner integrations.
+ 
+🚀 Phase 5: Deployment & Safety
+
+Agent Deployment: Agent Builder Deployment – Learn how to make your managed agent accessible via a web interface or API.
+Custom Backend Hosting: Cloud Run Quickstart – The go-to for hosting your own agent backends or custom-built tool servers.
+Safety & Guardrails:Gemini Enterprise Agent Platform Safety Settings – Configure filters to ensure your agent remains helpful and follows your defined constraints.
+
+les ressource de mongoDB :
+About MongoDB
+
+Explore the power of MongoDB's intelligent data platform to build innovative AI-driven solutions for real-world impact. MongoDB Atlas serves as the unified operational foundation and persistent memory layer for modern AI and agentic workloads. By combining operational, vector, and semantic data on a single platform, it eliminates the fragmented stacks and memory barriers that hinder AI performance. Ultimately, it empowers businesses to build production-grade AI that reasons accurately while remaining completely framework-agnostic.
+
+Resources
+
+Load the sample Mflix Dataset: Quickly spin up sample data to kickstart your project, sample_mflix.embedded_movies already contains vector embeddings for Vector Search! Or BYO embedding model and dataset(Embedding model should be one of MongoDB provided or Google provided).
+Data Modelling in MongoDB: Learn best practices for structuring your data.
+MongoDB MCP Server: Explore MongoDB MCP server to connect your database to LLM. 
+MongoDB Tools: Explore essential tools to optimize your development workflow.
+MongoDB Aggregations: Master data processing and analysis with powerful aggregation pipelines.
+MongoDB Atlas Search: Build lightning-fast search experiences directly within your database.
+MongoDB Vector Search: Supercharge your apps with AI-driven search capabilities.
+AI Learning Hub: Dive into AI with MongoDB—guides, tutorials, and more.
+Voyage AI documentation: Learn how to use MongoDB Voyage AI to generate embeddings.

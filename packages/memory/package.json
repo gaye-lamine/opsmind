@@ -1,0 +1,31 @@
+{
+  "name": "@opsmind/memory",
+  "version": "1.0.0",
+  "description": "OpsMind operational memory layer — MongoDB collections, repositories, memory engine, vector search",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "typecheck": "tsc --noEmit",
+    "seed-demo": "node ../../scratch/seed_demo.js"
+  },
+  "dependencies": {
+    "@opsmind/config": "workspace:*",
+    "@opsmind/shared": "workspace:*",
+    "mongodb": "^6.8.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  }
+}

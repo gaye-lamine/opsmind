@@ -1,0 +1,60 @@
+import { actionsApi } from "@/services/api-client/actions.api";
+import { ActionsPanel } from "@/components/decisions/ActionsPanel";
+
+export default async function ActionsPage() {
+  let data = null;
+  let error: string | null = null;
+
+  try {
+    data = await actionsApi.getPending();
+  } catch {
+    error = "Failed to load actions.";
+  }
+
+  return (
+    <div className="min-h-full bg-surface">
+      {/* ─── Hero Header ─────────────────────────────────────────────────────── */}
+      <div className="relative overflow-hidden border-b border-white/[0.05] bg-gradient-to-br from-surface-1 via-surface to-surface">
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: "linear-gradient(rgba(99,102,241,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.5) 1px, transparent 1px)",
+          backgroundSize: "40px 40px"
+        }} />
+        <div className="absolute top-0 right-1/4 w-96 h-32 bg-accent/5 blur-3xl rounded-full" />
+
+        <div className="relative p-8 pb-6">
+          <div className="animate-fade-in">
+            <h1 className="text-3xl font-extrabold tracking-tight">
+              <span className="text-text-primary">Command</span>{" "}
+              <span className="gradient-text">Directives</span>
+            </h1>
+            <p className="text-base text-text-muted mt-2 max-w-2xl font-medium">
+              Pending operational actions and strategic interventions recommended by the OpsMind agent.
+            </p>
+          </div>
+          <div className="mt-6 flex items-center gap-4">
+             <div className="flex items-center gap-2 px-3 py-1.5 glass-card rounded-full">
+                <span className="w-2 h-2 rounded-full bg-accent animate-pulse shadow-[0_0_8px_rgba(99,102,241,0.5)]"></span>
+                <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{data?.actions.length ?? 0} Pending Actions</span>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-8 space-y-8">
+        {error && (
+          <div className="border border-danger/30 bg-danger/5 rounded-xl p-4 flex items-center gap-3">
+            <svg className="w-5 h-5 text-danger flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+            <p className="text-sm font-medium text-danger">{error}</p>
+          </div>
+        )}
+
+        <div className="glass-card overflow-hidden">
+          <ActionsPanel actions={data?.actions ?? []} />
+        </div>
+      </div>
+    </div>
+  );
+}
+

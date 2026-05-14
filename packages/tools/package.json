@@ -1,0 +1,32 @@
+{
+  "name": "@opsmind/tools",
+  "version": "1.0.0",
+  "description": "OpsMind action capability layer — MCP tools, tool registry, MongoDB integrations",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google-cloud/pubsub": "^5.3.0",
+    "@opsmind/config": "workspace:*",
+    "@opsmind/mcp-client": "workspace:*",
+    "@opsmind/memory": "workspace:*",
+    "@opsmind/shared": "workspace:*",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  }
+}

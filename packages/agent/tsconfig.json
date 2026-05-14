@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "paths": {
+      "@opsmind/ai":     ["../ai/src/index.ts"],
+      "@opsmind/config": ["../config/src/index.ts"],
+      "@opsmind/memory": ["../memory/src/index.ts"],
+      "@opsmind/shared": ["../shared/src/index.ts"],
+      "@opsmind/tools":  ["../tools/src/index.ts"]
+    },
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "src/**/*",
+    "core/**/*",
+    "interfaces/**/*",
+    "workflows/**/*"
+  ],
+  "references": [
+    { "path": "../ai" },
+    { "path": "../config" },
+    { "path": "../memory" },
+    { "path": "../shared" },
+    { "path": "../tools" }
+  ],
+  "exclude": ["node_modules", "dist"]
+}

@@ -13,6 +13,8 @@ import { decisionQuerySchema } from "@opsmind/shared";
 const router: ExpressRouter = Router();
 const controller = new DecisionController();
 
+router.get("/search", controller.searchDecisions);
+
 router.get(
   "/",
   validateQuery(decisionQuerySchema),

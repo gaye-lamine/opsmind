@@ -3,6 +3,7 @@ import { type DecisionQueryDto } from "@opsmind/shared";
 import { type Decision } from "@opsmind/shared";
 import { DecisionRepository, ExecutionLogRepository } from "@opsmind/memory";
 import { type DecisionDocument } from "@opsmind/memory";
+import { generateEmbedding } from "@opsmind/ai";
 
 const logger = createLogger("DecisionService");
 
@@ -21,6 +22,25 @@ export class DecisionService {
   async listDecisions(query: DecisionQueryDto) {
     logger.debug("Listing decisions", { query });
     return this.decisionRepo.queryPaginated(query);
+  }
+
+  async searchDecisions(query: string, limit: number = 10) {
+    logger.info("Performing hybrid search", { query, limit });
+    
+    // Generate embedding for the search query
+    const embedding = await generateEmbedding(query);
+    
+    // Perform hybrid search in the repository
+    const results = await this.decisionRepo.searchHybrid(query, embedding, limit);
+    
+    return {
+      items: results.map(r => ({
+        ...mapDocumentToDecision(r),
+        searchScore: r.searchScore,
+        searchType: r.searchType
+      })),
+      total: results.length
+    };
   }
 
   async getDecisionById(id: string): Promise<Decision> {

@@ -14,6 +14,54 @@ export class DecisionController {
   private readonly service = new DecisionService();
 
   /**
+   * GET /api/decisions/search?q=...
+   * Performs a hybrid search over decisions.
+   */
+  searchDecisions = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const query = req.query.q as string;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const requestId = req.headers["x-request-id"] as string | undefined;
+
+      if (!query) {
+        res.status(400).json({ error: "Missing search query 'q'" });
+        return;
+      }
+
+      const result = await this.service.searchDecisions(query, limit);
+
+      res.json(
+        successResponse(
+          {
+            decisions: result.items.map((d) => ({
+              id: d.id,
+              sessionId: d.sessionId,
+              goal: d.goal,
+              category: d.category,
+              status: d.status,
+              confidenceLevel: d.confidenceLevel,
+              confidenceScore: d.confidenceScore,
+              summary: d.summary,
+              recommendationCount: d.recommendations.length,
+              createdAt: d.createdAt.toISOString(),
+              searchScore: (d as any).searchScore,
+              searchType: (d as any).searchType,
+            })),
+            total: result.total,
+          },
+          { requestId }
+        )
+      );
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  /**
    * GET /api/decisions
    * Returns a paginated list of decisions with optional filters.
    */

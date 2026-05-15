@@ -49,4 +49,9 @@ export const decisionsApi = {
 
   getExecutedActions: (id: string) =>
     apiClient.get<ExecutedActionsData>(`/decisions/${id}/executed-actions`),
+
+  search: (query: string, limit: number = 20) =>
+    apiClient.get<{ decisions: DecisionSummary[]; total: number }>(
+      `/decisions/search?q=${encodeURIComponent(query)}&limit=${limit}`
+    ),
 };

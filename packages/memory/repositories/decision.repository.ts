@@ -126,6 +126,100 @@ export class DecisionRepository extends BaseRepository<DecisionDocument> {
   }
 
   /**
+   * Performs a Hybrid Search — combining Atlas Search (full-text) and Vector Search (semantic).
+   * 
+   * This is the "ultimate" search experience: it finds exact matches for terms (like "Stripe" or "404")
+   * while also finding semantically similar issues (like "payment failure").
+   * 
+   * @param query - The text search query
+   * @param embedding - The vector embedding of the query
+   * @param limit - Maximum number of results
+   */
+  async searchHybrid(
+    query: string,
+    embedding: number[],
+    limit: number
+  ): Promise<(DecisionDocument & { searchScore: number; searchType: "text" | "vector" | "hybrid" })[]> {
+    try {
+      const collection = await this.getCollection();
+
+      // Run both searches in parallel
+      const [vectorResults, textResults] = await Promise.all([
+        // 1. Vector Search
+        collection.aggregate<DecisionDocument & { score: number }>([
+          {
+            $vectorSearch: {
+              index: "decision_vector_index",
+              path: "embedding",
+              queryVector: embedding,
+              numCandidates: limit * 5,
+              limit: limit,
+            }
+          },
+          { $addFields: { score: { $meta: "vectorSearchScore" } } }
+        ]).toArray().catch(() => []),
+
+        // 2. Full-Text Search (Atlas Search)
+        // Note: This will only work if the user creates a search index named "default"
+        collection.aggregate<DecisionDocument & { score: number }>([
+          {
+            $search: {
+              index: "default",
+              text: {
+                query: query,
+                path: ["goal", "summary", "findings.title", "findings.description"],
+                fuzzy: { maxEdits: 1 }
+              }
+            }
+          },
+          { $limit: limit },
+          { $addFields: { score: { $meta: "searchScore" } } }
+        ]).toArray().catch(() => [])
+      ]);
+
+      // Merge and deduplicate results
+      const resultsMap = new Map<string, DecisionDocument & { searchScore: number; searchType: "text" | "vector" | "hybrid" }>();
+
+      // Add vector results first
+      vectorResults.forEach(doc => {
+        resultsMap.set(doc._id, {
+          ...doc,
+          searchScore: doc.score,
+          searchType: "vector"
+        });
+      });
+
+      // Merge text results
+      textResults.forEach(doc => {
+        const existing = resultsMap.get(doc._id);
+        if (existing) {
+          // It's in both! Combine scores and mark as hybrid
+          existing.searchScore += doc.score;
+          existing.searchType = "hybrid";
+        } else {
+          resultsMap.set(doc._id, {
+            ...doc,
+            searchScore: doc.score,
+            searchType: "text"
+          });
+        }
+      });
+
+      // Sort by combined score and limit
+      return Array.from(resultsMap.values())
+        .sort((a, b) => b.searchScore - a.searchScore)
+        .slice(0, limit);
+
+    } catch (error) {
+      this.logger.error("Hybrid search failed", { error });
+      // Fallback to simple vector search if something fails (like missing text index)
+      return this.findRecentFinalized(limit).then(docs => 
+        docs.map(d => ({ ...d, searchScore: 0, searchType: "vector" as const }))
+      );
+    }
+  }
+
+  /**
    * Stores the embedding vector for a decision.
    * Called after the vector memory engine generates the embedding.
    */

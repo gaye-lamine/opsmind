@@ -1,5 +1,5 @@
 import { decisionsApi } from "@/services/api-client/decisions.api";
-import { DecisionTable } from "@/components/decisions/DecisionTable";
+import { DecisionExplorer } from "@/components/decisions/DecisionExplorer";
 
 export default async function DecisionsPage() {
   let data = null;
@@ -50,12 +50,7 @@ export default async function DecisionsPage() {
           </div>
         )}
 
-        <div className="glass-card overflow-hidden">
-          <DecisionTable
-            decisions={data?.decisions ?? []}
-            pagination={data?.pagination ?? null}
-          />
-        </div>
+        <DecisionExplorer initialData={data ?? { decisions: [], pagination: { total: 0, page: 1, pageSize: 50, totalPages: 0 } }} />
       </div>
     </div>
   );

@@ -72,9 +72,8 @@ export class CreateGitlabIssueTool extends BaseTool<CreateGitlabIssueInput, Crea
   readonly name = "create_gitlab_issue";
   readonly description = 
     "[ACTION] Reports an operational anomaly or decision to GitLab as a new issue. " +
+    "Use this ONLY if you need to create a specific issue that is NOT a critical anomaly report (as critical reports are handled automatically by the orchestrator at the end of the pipeline). " +
     "REQUIRED input: { \"title\": \"<issue title>\", \"description\": \"<issue body>\" }. " +
-    "Use this to 'close the loop' and notify the engineering team about a problem or decision. " +
-    "The issue will be created in the configured GitLab project. " +
     "This is a REAL ACTION — it creates an actual issue in GitLab.";
   readonly category = "business" as const;
   readonly inputSchema = createGitlabIssueInputSchema as any;

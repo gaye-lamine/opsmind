@@ -703,5 +703,73 @@ export class Orchestrator {
         }
       }
     }
+
+    // ── Action 3: Create GitLab Issue for critical anomalies ──────────────────
+    if (registry.has("create_gitlab_issue")) {
+      const topFinding = criticalFindings[0];
+      if (topFinding) {
+        const issueSeverity = topFinding.severity === "critical" ? "critical" : "high";
+        
+        emit({ type: "tool_called", toolName: "create_gitlab_issue", sessionId, timestamp: new Date() });
+
+        // Build a rich description using the decision data
+        const description = `
+## Investigation Summary
+${decision.summary}
+
+## Key Findings
+${decision.findings.map(f => `### [${f.severity.toUpperCase()}] ${f.title}\n${f.description}`).join('\n\n')}
+
+## Recommended Actions
+${decision.recommendations.map(r => `- **[${r.priority}] ${r.title}**: ${r.description}`).join('\n')}
+
+---
+*Created automatically by OpsMind Agent*
+*Session ID: ${sessionId}*
+*Decision ID: ${decision.id}*
+        `.trim();
+
+        const gitlabResult = await registry.execute("create_gitlab_issue", {
+          title: `Investigation Report: ${topFinding.title}`,
+          description,
+          severity: issueSeverity,
+          labels: ["opsmind-automated", "remediation-required"]
+        });
+
+        emit({
+          type: "tool_result",
+          toolName: "create_gitlab_issue",
+          success: gitlabResult.success,
+          sessionId,
+          timestamp: new Date(),
+        });
+
+        if (gitlabResult.success) {
+          const webUrl = (gitlabResult.data as Record<string, unknown>)["webUrl"] as string;
+          logger.info("✅ GitLab issue created automatically", {
+            decisionId: decision.id,
+            webUrl,
+          });
+
+          // Log the executed action for UI visibility
+          await this.memoryWriter.writeLog({
+            sessionId,
+            level: "info",
+            step: "autonomous_action",
+            message: `GitLab issue created: ${topFinding.title}`,
+            data: {
+              actionType: "create_gitlab_issue",
+              system: "gitlab",
+              status: "success",
+              webUrl,
+              title: topFinding.title,
+              decisionId: decision.id,
+              executedAt: new Date().toISOString(),
+            },
+            decisionId: decision.id,
+          });
+        }
+      }
+    }
   }
 }

@@ -14,7 +14,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./",
+    "rootDir": "../../",
     "paths": {
       "@opsmind/ai":     ["../ai/src/index.ts"],
       "@opsmind/config": ["../config/src/index.ts"],

@@ -21,9 +21,9 @@ const mongoDbPerformanceInputSchema = z.object({
    */
   analysisType: z
     .enum(["slow_queries", "index_suggestions", "cluster_stats"])
-    .default("cluster_stats"),
+    .optional(),
   /** Database name for stats (default: opsmind) */
-  database: z.string().default("opsmind"),
+  database: z.string().optional(),
 });
 
 type MongoDbPerformanceInput = z.infer<typeof mongoDbPerformanceInputSchema>;
@@ -93,11 +93,14 @@ export class MongoDbPerformanceTool extends BaseTool<
 
     const start = Date.now();
 
+    const analysisType = input.analysisType ?? "cluster_stats";
+    const database = input.database ?? "opsmind";
+
     try {
       let result;
       let summary: string;
 
-      switch (input.analysisType) {
+      switch (analysisType) {
         case "slow_queries": {
           // Use atlas-get-performance-advisor for slow query analysis
           const config = getCloudConfig();
@@ -121,9 +124,9 @@ export class MongoDbPerformanceTool extends BaseTool<
         }
         case "cluster_stats": {
           result = await mcpClient.execute("db-stats", {
-            database: input.database,
+            database,
           });
-          summary = `Database statistics for ${input.database}`;
+          summary = `Database statistics for ${database}`;
           break;
         }
       }
@@ -138,7 +141,7 @@ export class MongoDbPerformanceTool extends BaseTool<
 
       return toolSuccess(
         {
-          analysisType: input.analysisType,
+          analysisType,
           findings,
           summary,
           executedVia: "mongodb-mcp-server",

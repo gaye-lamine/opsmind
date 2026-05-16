@@ -18,17 +18,17 @@ const mongoDbQueryInputSchema = z.object({
    * "aggregate" — run an aggregation pipeline
    * "count" — count documents matching a filter
    */
-  operation: z.enum(["find", "aggregate", "count"]).default("find"),
+  operation: z.enum(["find", "aggregate", "count"]).optional(),
   /** Database name (default: opsmind) */
-  database: z.string().default("opsmind"),
+  database: z.string().optional(),
   /** Collection name */
   collection: z.string().min(1),
   /** MongoDB filter object (for find/count) */
   filter: z.record(z.unknown()).optional(),
   /** Aggregation pipeline stages (for aggregate) */
   pipeline: z.array(z.record(z.unknown())).optional(),
-  /** Maximum number of documents to return */
-  limit: z.number().int().positive().default(10).transform((v) => Math.min(v, 100)),
+  /** Maximum number of documents to return (default: 10) */
+  limit: z.number().int().positive().optional(),
   /** Fields to project (for find) */
   projection: z.record(z.unknown()).optional(),
   /** Sort order (for find) */
@@ -108,16 +108,20 @@ export class MongoDbQueryTool extends BaseTool<MongoDbQueryInput, MongoDbQueryOu
 
     const start = Date.now();
 
+    const operation = input.operation ?? "find";
+    const database = input.database ?? "opsmind";
+    const limit = Math.min(input.limit ?? 10, 100);
+
     try {
       let result;
 
-      switch (input.operation) {
+      switch (operation) {
         case "find": {
           result = await mcpClient.execute("find", {
-            database: input.database,
+            database,
             collection: input.collection,
             ...(input.filter !== undefined ? { filter: input.filter } : {}),
-            ...(input.limit !== undefined ? { limit: input.limit } : {}),
+            limit,
             ...(input.projection !== undefined ? { projection: input.projection } : {}),
             ...(input.sort !== undefined ? { sort: input.sort } : {}),
           });
@@ -125,7 +129,7 @@ export class MongoDbQueryTool extends BaseTool<MongoDbQueryInput, MongoDbQueryOu
         }
         case "aggregate": {
           result = await mcpClient.execute("aggregate", {
-            database: input.database,
+            database,
             collection: input.collection,
             pipeline: input.pipeline ?? [],
           });
@@ -133,7 +137,7 @@ export class MongoDbQueryTool extends BaseTool<MongoDbQueryInput, MongoDbQueryOu
         }
         case "count": {
           result = await mcpClient.execute("count", {
-            database: input.database,
+            database,
             collection: input.collection,
             ...(input.filter !== undefined ? { filter: input.filter } : {}),
           });
@@ -157,8 +161,8 @@ export class MongoDbQueryTool extends BaseTool<MongoDbQueryInput, MongoDbQueryOu
 
       return toolSuccess(
         {
-          operation: input.operation,
-          database: input.database,
+          operation,
+          database,
           collection: input.collection,
           documents,
           count: documents.length,

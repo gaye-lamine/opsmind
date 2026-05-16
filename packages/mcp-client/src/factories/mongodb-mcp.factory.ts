@@ -43,6 +43,7 @@ export function createMongoDbMcpClient(config: MongoDbMcpConfig): McpClient {
     env: {
       // Suppress npx download progress output to stderr
       NPM_CONFIG_PROGRESS: "false",
+      ...process.env,
     },
   });
 }

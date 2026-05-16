@@ -18,6 +18,7 @@
     "allowArbitraryExtensions": true,
     "jsx": "preserve",
     "incremental": true,
+    "rootDir": "../../",
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["./*"],

@@ -82,14 +82,21 @@ export class AgentRuntime {
 
     // 5. Initialize MongoDB Atlas MCP Client (official MongoDB MCP Server)
     const env = getEnv();
-    if (env.ATLAS_MCP_CLIENT_ID !== undefined && env.ATLAS_MCP_CLIENT_SECRET !== undefined) {
+    if (env.MONGODB_URI !== undefined) {
       try {
-        await initializeMongoDbMcpClient({
+        const mcpConfig: any = {
           connectionString: env.MONGODB_URI,
-          atlasClientId: env.ATLAS_MCP_CLIENT_ID,
-          atlasClientSecret: env.ATLAS_MCP_CLIENT_SECRET,
           readOnly: true,
-        });
+        };
+
+        if (env.ATLAS_MCP_CLIENT_ID) {
+          mcpConfig.atlasClientId = env.ATLAS_MCP_CLIENT_ID;
+        }
+        if (env.ATLAS_MCP_CLIENT_SECRET) {
+          mcpConfig.atlasClientSecret = env.ATLAS_MCP_CLIENT_SECRET;
+        }
+
+        await initializeMongoDbMcpClient(mcpConfig);
         logger.info("MongoDB Atlas MCP client initialized");
       } catch (err) {
         // Non-fatal — system works without MCP client, just with fewer tools
@@ -98,7 +105,7 @@ export class AgentRuntime {
         });
       }
     } else {
-      logger.info("MongoDB Atlas MCP credentials not configured — skipping MCP client init");
+      logger.warn("MONGODB_URI not configured — cannot initialize MongoDB MCP client");
     }
 
     // 6. Initialize GitLab MCP Client (Official Partner)

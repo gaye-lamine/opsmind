@@ -14,8 +14,9 @@
     "sourceMap": true,
     "composite": true,
     "outDir": "./dist",
-    "rootDir": "./",
+    "rootDir": "../../",
     "paths": {
+      "@opsmind/ai": ["../ai/src/index.ts"],
       "@opsmind/config": ["../config/src/index.ts"],
       "@opsmind/shared": ["../shared/src/index.ts"],
       "@opsmind/memory": ["../memory/src/index.ts"],
@@ -25,6 +26,21 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "mongodb/**/*", "mongodb-mcp/**/*", "analytics/**/*", "business/**/*", "actions/**/*", "registry/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*",
+    "mongodb/**/*",
+    "mongodb-mcp/**/*",
+    "analytics/**/*",
+    "business/**/*",
+    "actions/**/*",
+    "registry/**/*"
+  ],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../ai" },
+    { "path": "../config" },
+    { "path": "../shared" },
+    { "path": "../memory" },
+    { "path": "../mcp-client" }
+  ]
 }

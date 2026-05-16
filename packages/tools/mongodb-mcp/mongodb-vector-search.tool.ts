@@ -22,7 +22,7 @@ const mongoDbVectorSearchInputSchema = z.object({
   /**
    * Maximum number of similar decisions to return.
    */
-  limit: z.number().int().positive().default(5).transform((v) => Math.min(v, 10)),
+  limit: z.number().int().positive().optional(),
 });
 
 type MongoDbVectorSearchInput = z.infer<typeof mongoDbVectorSearchInputSchema>;
@@ -98,9 +98,10 @@ export class MongoDbVectorSearchTool extends BaseTool<
       }
 
       // 2. Perform vector search
+      const limit = Math.min(input.limit ?? 5, 10);
       const similarDecisions = await this.vectorStore.findSimilarDecisions(
         embedding,
-        input.limit
+        limit
       );
 
       const durationMs = Date.now() - start;

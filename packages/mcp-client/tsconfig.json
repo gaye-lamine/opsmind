@@ -13,7 +13,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./",
+    "rootDir": "../../",
     "paths": {
       "@opsmind/shared": ["../shared/src/index.ts"]
     },
@@ -23,5 +23,8 @@
     "composite": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../shared" }
+  ]
 }

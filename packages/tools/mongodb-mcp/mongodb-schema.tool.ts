@@ -14,7 +14,7 @@ const logger = createLogger("MongoDbSchemaTool");
 
 const mongoDbSchemaInputSchema = z.object({
   /** Database name (default: opsmind) */
-  database: z.string().default("opsmind"),
+  database: z.string().optional(),
   /** Collection name to inspect */
   collection: z.string().min(1),
 });
@@ -59,9 +59,10 @@ export class MongoDbSchemaTool extends BaseTool<MongoDbSchemaInput, MongoDbSchem
   readonly outputSchema = mongoDbSchemaOutputSchema;
 
   protected async run(input: MongoDbSchemaInput): Promise<ToolResult<MongoDbSchemaOutput>> {
+    const database = input.database ?? "opsmind";
     logger.info("Inspecting MongoDB schema via MCP", {
       collection: input.collection,
-      database: input.database,
+      database,
     });
 
     let mcpClient;
@@ -83,7 +84,7 @@ export class MongoDbSchemaTool extends BaseTool<MongoDbSchemaInput, MongoDbSchem
 
     try {
       const result = await mcpClient.execute("collection-schema", {
-        database: input.database,
+        database,
         collection: input.collection,
       });
 
@@ -98,7 +99,7 @@ export class MongoDbSchemaTool extends BaseTool<MongoDbSchemaInput, MongoDbSchem
 
       return toolSuccess(
         {
-          database: input.database,
+          database,
           collection: input.collection,
           schema,
           fieldCount,

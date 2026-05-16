@@ -23,7 +23,7 @@ const mongoDbAnalyticsInputSchema = z.object({
   /** Filter context (e.g., category or anomalyId) */
   filter: z.record(z.unknown()).optional(),
   /** Timeframe in days (default: 30) */
-  timeframeDays: z.number().int().positive().default(30),
+  timeframeDays: z.number().int().positive().optional(),
 });
 
 type MongoDbAnalyticsInput = z.infer<typeof mongoDbAnalyticsInputSchema>;
@@ -68,10 +68,11 @@ export class MongoDbAnalyticsTool extends BaseTool<
     const start = Date.now();
     const mcpClient = getMongoDbMcpClient();
 
+    const timeframeDays = input.timeframeDays ?? 30;
     try {
       let pipeline: any[] = [];
       const sinceDate = new Date();
-      sinceDate.setDate(sinceDate.getDate() - input.timeframeDays);
+      sinceDate.setDate(sinceDate.getDate() - timeframeDays);
 
       switch (input.analysisType) {
         case "trend":
@@ -127,7 +128,7 @@ export class MongoDbAnalyticsTool extends BaseTool<
         {
           analysisType: input.analysisType,
           insights,
-          summary: `Analyzed ${insights.length} data points over the last ${input.timeframeDays} days.`,
+          summary: `Analyzed ${insights.length} data points over the last ${timeframeDays} days.`,
           executedVia: "mongodb-aggregation-pipeline",
         },
         durationMs

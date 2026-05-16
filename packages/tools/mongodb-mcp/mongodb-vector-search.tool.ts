@@ -22,7 +22,7 @@ const mongoDbVectorSearchInputSchema = z.object({
   /**
    * Maximum number of similar decisions to return.
    */
-  limit: z.number().int().positive().max(10).default(5),
+  limit: z.number().int().positive().default(5).transform((v) => Math.min(v, 10)),
 });
 
 type MongoDbVectorSearchInput = z.infer<typeof mongoDbVectorSearchInputSchema>;

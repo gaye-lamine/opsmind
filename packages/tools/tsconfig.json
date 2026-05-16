@@ -18,12 +18,13 @@
     "paths": {
       "@opsmind/config": ["../config/src/index.ts"],
       "@opsmind/shared": ["../shared/src/index.ts"],
-      "@opsmind/memory": ["../memory/src/index.ts"]
+      "@opsmind/memory": ["../memory/src/index.ts"],
+      "@opsmind/mcp-client": ["../mcp-client/src/index.ts"]
     },
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "mongodb/**/*", "analytics/**/*", "business/**/*", "registry/**/*"],
+  "include": ["src/**/*", "mongodb/**/*", "mongodb-mcp/**/*", "analytics/**/*", "business/**/*", "actions/**/*", "registry/**/*"],
   "exclude": ["node_modules", "dist"]
 }

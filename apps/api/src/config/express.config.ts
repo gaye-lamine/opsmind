@@ -58,7 +58,7 @@ export function createApp(): Application {
   app.use((_req, res) => {
     res.status(404).json({
       success: false,
-      error: { code: "NOT_FOUND", message: "Route not found" },
+      error: { code: "NOT_FOUND", message: "[VERSION_2] Route not found" },
     });
   });
 

@@ -20,7 +20,8 @@
       "@opsmind/config": ["../config/src/index.ts"],
       "@opsmind/memory": ["../memory/src/index.ts"],
       "@opsmind/shared": ["../shared/src/index.ts"],
-      "@opsmind/tools":  ["../tools/src/index.ts"]
+      "@opsmind/tools":  ["../tools/src/index.ts"],
+      "@opsmind/mcp-client": ["../mcp-client/src/index.ts"]
     },
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -37,7 +38,8 @@
     { "path": "../config" },
     { "path": "../memory" },
     { "path": "../shared" },
-    { "path": "../tools" }
+    { "path": "../tools" },
+    { "path": "../mcp-client" }
   ],
   "exclude": ["node_modules", "dist"]
 }

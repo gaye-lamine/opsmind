@@ -14,6 +14,7 @@ import { MongoDbAnalyticsTool } from "../mongodb-mcp/mongodb-analytics.tool";
 import { PublishAlertTool } from "../actions/publish-alert.tool";
 import { UpdateStateTool } from "../actions/update-state.tool";
 import { TriggerInvestigationTool } from "../actions/trigger-investigation.tool";
+import { CreateGitlabIssueTool } from "../actions/create-gitlab-issue.tool";
 
 const logger = createLogger("ToolInitializer");
 
@@ -56,6 +57,7 @@ export function initializeTools(): void {
   registry.register(new PublishAlertTool() as never);
   registry.register(new UpdateStateTool() as never);
   registry.register(new TriggerInvestigationTool() as never);
+  registry.register(new CreateGitlabIssueTool() as never);
 
   logger.info("Tool registry initialized", {
     toolCount: registry.size,

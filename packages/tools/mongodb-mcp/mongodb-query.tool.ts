@@ -28,7 +28,7 @@ const mongoDbQueryInputSchema = z.object({
   /** Aggregation pipeline stages (for aggregate) */
   pipeline: z.array(z.record(z.unknown())).optional(),
   /** Maximum number of documents to return */
-  limit: z.number().int().positive().max(100).default(10),
+  limit: z.number().int().positive().default(10).transform((v) => Math.min(v, 100)),
   /** Fields to project (for find) */
   projection: z.record(z.unknown()).optional(),
   /** Sort order (for find) */

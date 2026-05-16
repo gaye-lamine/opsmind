@@ -27,6 +27,13 @@ export {
   disconnectMongoDbMcpClient,
 } from "./factories/mongodb-mcp.factory";
 
+export {
+  createGitLabMcpClient,
+  getGitLabMcpClient,
+  initializeGitLabMcpClient,
+  disconnectGitLabMcpClient,
+} from "./factories/gitlab-mcp.factory";
+
 // ─── Types (public contracts) ─────────────────────────────────────────────────
 export type {
   IToolExecutor,

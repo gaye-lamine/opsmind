@@ -13,7 +13,6 @@
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./src",
     "types": ["node"],
     "paths": {
       "@opsmind/agent":      ["../../packages/agent/src/index.ts"],

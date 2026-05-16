@@ -30,6 +30,13 @@ export class DecisionService {
     // Generate embedding for the search query
     const embedding = await generateEmbedding(query);
     
+    if (!embedding) {
+      throw new MemoryError(
+        "Failed to generate embedding for search. Check AI service connectivity.",
+        ERROR_CODES.AGENT_REASONING_FAILED
+      );
+    }
+    
     // Perform hybrid search in the repository
     const results = await this.decisionRepo.searchHybrid(query, embedding, limit);
     
@@ -115,13 +122,13 @@ function mapDocumentToDecision(doc: DecisionDocument): Decision {
     confidenceScore: doc.confidenceScore,
     confidenceLevel: doc.confidenceLevel,
     reasoningTrace: {
-      steps: doc.reasoningTrace.steps,
-      totalDurationMs: doc.reasoningTrace.totalDurationMs,
-      modelUsed: doc.reasoningTrace.modelUsed,
-      ...(doc.reasoningTrace.promptTokens !== undefined
+      steps: doc.reasoningTrace?.steps ?? [],
+      totalDurationMs: doc.reasoningTrace?.totalDurationMs ?? 0,
+      modelUsed: doc.reasoningTrace?.modelUsed ?? "unknown",
+      ...(doc.reasoningTrace?.promptTokens !== undefined
         ? { promptTokens: doc.reasoningTrace.promptTokens }
         : {}),
-      ...(doc.reasoningTrace.completionTokens !== undefined
+      ...(doc.reasoningTrace?.completionTokens !== undefined
         ? { completionTokens: doc.reasoningTrace.completionTokens }
         : {}),
     },

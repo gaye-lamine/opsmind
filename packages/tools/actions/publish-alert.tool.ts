@@ -90,7 +90,7 @@ export class PublishAlertTool extends BaseTool<PublishAlertInput, PublishAlertOu
     "The alert is published to the opsmind-alerts topic and consumed by downstream systems. " +
     "This is a REAL ACTION — it executes in Google Cloud Pub/Sub.";
   readonly category = "system" as const;
-  readonly inputSchema = publishAlertInputSchema;
+  readonly inputSchema = publishAlertInputSchema as any;
   readonly outputSchema = publishAlertOutputSchema;
 
   protected async run(input: PublishAlertInput): Promise<ToolResult<PublishAlertOutput>> {

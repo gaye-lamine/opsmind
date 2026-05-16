@@ -24,6 +24,20 @@ export interface StdioMcpServerConfig {
 }
 
 /**
+ * Configuration for connecting to an HTTP (SSE) MCP server.
+ */
+export interface HttpMcpServerConfig {
+  /** The base URL of the MCP server (e.g. "https://gitlab.com/api/v4/mcp") */
+  url: string;
+  /** Optional custom headers (e.g. Authorization) */
+  headers?: Record<string, string>;
+  /** Human-readable name for logging */
+  serverName: string;
+}
+
+export type McpServerConfig = StdioMcpServerConfig | HttpMcpServerConfig;
+
+/**
  * Configuration for the MongoDB Atlas MCP Server.
  */
 export interface MongoDbMcpConfig {

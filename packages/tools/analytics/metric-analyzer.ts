@@ -20,7 +20,7 @@ const metricAnalyzerInputSchema = z.object({
   /**
    * Number of historical snapshots to include in trend analysis.
    */
-  historyDepth: z.number().int().positive().max(100).default(5).transform((v) => Math.min(v, 100)),
+  historyDepth: z.number().int().positive().default(5).transform((v) => Math.min(v, 100)),
   /**
    * Whether to run anomaly detection on the metrics.
    */

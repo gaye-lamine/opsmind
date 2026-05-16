@@ -101,6 +101,24 @@ export class AgentRuntime {
       logger.info("MongoDB Atlas MCP credentials not configured — skipping MCP client init");
     }
 
+    // 6. Initialize GitLab MCP Client (Official Partner)
+    if (env.GITLAB_TOKEN !== undefined) {
+      try {
+        const { initializeGitLabMcpClient } = await import("@opsmind/mcp-client");
+        await initializeGitLabMcpClient({
+          token: env.GITLAB_TOKEN,
+          baseUrl: env.GITLAB_BASE_URL,
+        });
+        logger.info("GitLab MCP client initialized");
+      } catch (err) {
+        logger.warn("GitLab MCP client failed to initialize — continuing without it", {
+          error: err instanceof Error ? err.message : String(err),
+        });
+      }
+    } else {
+      logger.info("GITLAB_TOKEN not configured — skipping GitLab MCP client init");
+    }
+
     this.bootstrapped = true;
     logger.info("Agent runtime bootstrapped successfully");
   }

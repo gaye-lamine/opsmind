@@ -23,7 +23,7 @@ const readStateInputSchema = z.object({
    */
   mode: z.enum(["current", "history", "range"]).default("current"),
   /** For mode "history": number of snapshots to retrieve */
-  limit: z.number().int().positive().max(20).default(5),
+  limit: z.number().int().positive().default(5).transform((v) => Math.min(v, 20)),
   /** For mode "range": ISO date string */
   from: z.string().datetime().optional(),
   /** For mode "range": ISO date string */

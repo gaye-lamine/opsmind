@@ -5,7 +5,7 @@ import { type ToolManifest } from "@opsmind/shared";
 import {
   type IToolExecutor,
   type NormalizedToolResult,
-  type StdioMcpServerConfig,
+  type StdioMcpServerConfig as McpServerConfig,
   type McpClientState,
   type RawMcpCallResult,
   type RawMcpTool,
@@ -17,29 +17,15 @@ const logger = createLogger("McpClient");
 /**
  * McpClient — connects to an external MCP server via stdio transport
  * and exposes its tools through the IToolExecutor interface.
- *
- * This is the client-side counterpart to apps/mcp-server.
- * It implements IToolExecutor so it can be used anywhere a ToolRegistry is used.
- *
- * Design principles:
- * - All MCP SDK types are encapsulated here — never leak to callers
- * - All responses are normalized via McpResponseParser before returning
- * - Tool manifests are cached after the first tools/list call
- * - Connection is lazy — established on first use or explicit connect()
- *
- * The McpClient does NOT:
- * - Know about the agent runtime, orchestrator, or workflows
- * - Import @opsmind/agent, @opsmind/ai, @opsmind/memory, @opsmind/tools
- * - Contain any business logic
  */
 export class McpClient implements IToolExecutor {
   private client: Client | null = null;
   private transport: StdioClientTransport | null = null;
   private cachedManifests: ToolManifest[] | null = null;
   private state: McpClientState;
-  private readonly config: StdioMcpServerConfig;
+  private readonly config: McpServerConfig;
 
-  constructor(config: StdioMcpServerConfig) {
+  constructor(config: McpServerConfig) {
     this.config = config;
     this.state = {
       status: "disconnected",

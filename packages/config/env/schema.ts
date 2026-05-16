@@ -65,6 +65,11 @@ export const envSchema = z.object({
 
   // Google Cloud Pub/Sub (for real action execution)
   PUBSUB_TOPIC_ID: z.string().default("opsmind-alerts"),
+
+  // GitLab MCP Integration (Official Partner)
+  GITLAB_TOKEN: z.string().optional(),
+  GITLAB_BASE_URL: z.string().url().default("https://gitlab.com/api/v4/mcp"),
+  GITLAB_PROJECT_ID: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

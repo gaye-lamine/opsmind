@@ -20,7 +20,7 @@ const decisionRetrieverInputSchema = z.object({
    * "by_session" — all decisions from a specific session
    */
   mode: z.enum(["recent", "by_category", "by_metric", "by_session"]).default("recent"),
-  limit: z.number().int().positive().max(20).default(5),
+  limit: z.number().int().positive().default(5).transform((v) => Math.min(v, 20)),
   /**
    * Only valid for mode="by_category".
    * Must be one of the decision categories — NOT goal categories.

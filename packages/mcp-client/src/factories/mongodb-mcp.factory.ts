@@ -19,9 +19,9 @@ import { type MongoDbMcpConfig } from "../types/mcp-client.types";
  *   const result = await client.execute("find", { ... });
  */
 export function createMongoDbMcpClient(config: MongoDbMcpConfig): McpClient {
+  const isProd = process.env.NODE_ENV === "production";
+  
   const args: string[] = [
-    "-y",
-    "mongodb-mcp-server@latest",
     "--connectionString",
     config.connectionString,
   ];
@@ -38,11 +38,10 @@ export function createMongoDbMcpClient(config: MongoDbMcpConfig): McpClient {
   }
 
   return new McpClient({
-    command: "npx",
-    args,
+    command: isProd ? "mongodb-mcp-server" : "npx",
+    args: isProd ? args : ["-y", "mongodb-mcp-server@latest", ...args],
     serverName: "mongodb-atlas-mcp",
     env: {
-      // Suppress npx download progress output to stderr
       NPM_CONFIG_PROGRESS: "false",
       ...process.env,
     },

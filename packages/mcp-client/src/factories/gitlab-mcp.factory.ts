@@ -15,29 +15,22 @@ export function createGitLabMcpClient(config: {
   baseUrl?: string;
   token?: string;
 }): McpClient {
+  const isProd = process.env.NODE_ENV === "production";
   const baseUrl = config.baseUrl || "https://gitlab.com/api/v4/mcp/";
   
-  // We use npx mcp-remote to bridge the HTTP GitLab MCP to our Stdio client
-  const args: string[] = [
-    "-y",
-    "mcp-remote@latest",
-    baseUrl,
-  ];
+  const args: string[] = [baseUrl];
 
   const env: Record<string, string> = {
     NPM_CONFIG_PROGRESS: "false",
   };
 
-  // If a token is provided, we might need to pass it.
-  // Note: mcp-remote usually handles OAuth, but for a headless agent, 
-  // we might need a custom approach or pre-authenticated state.
   if (config.token) {
     env.GITLAB_TOKEN = config.token;
   }
 
   return new McpClient({
-    command: "npx",
-    args,
+    command: isProd ? "mcp-remote" : "npx",
+    args: isProd ? args : ["-y", "mcp-remote@latest", ...args],
     serverName: "gitlab-mcp",
     env,
   });

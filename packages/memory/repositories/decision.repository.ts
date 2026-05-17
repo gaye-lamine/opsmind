@@ -154,6 +154,7 @@ export class DecisionRepository extends BaseRepository<DecisionDocument> {
               queryVector: embedding,
               numCandidates: limit * 5,
               limit: limit,
+              filter: { status: "finalized" }
             }
           },
           { $addFields: { score: { $meta: "vectorSearchScore" } } }
@@ -172,6 +173,7 @@ export class DecisionRepository extends BaseRepository<DecisionDocument> {
               }
             }
           },
+          { $match: { status: "finalized" } },
           { $limit: limit },
           { $addFields: { score: { $meta: "searchScore" } } }
         ]).toArray().catch(() => [])

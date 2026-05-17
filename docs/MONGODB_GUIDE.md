@@ -44,16 +44,30 @@ To enable Hybrid Search in OpsMind, you need to create a Search Index in your Mo
 
 ## 2. Ensure Vector Search Index Exists
 
-You should already have a vector search index named `decision_vector_index`. If not, create it with this JSON:
+You should already have a vector search index named `decision_vector_index`.
+
+> [!IMPORTANT]
+> **Metadata Filtering**: The OpsMind agent runtime filters vector search queries dynamically by `status` (and optionally `category`). To prevent MongoDB Atlas from throwing filtering errors, you MUST configure these metadata fields as `filter` types in your index definition.
+> **Dimensions**: We use high-fidelity 1024-dimensional embeddings (Voyage AI or premium Google embeddings).
+
+Create the index on the `decisions` collection with the following JSON configuration:
 
 ```json
 {
   "fields": [
     {
-      "numDimensions": 768,
+      "numDimensions": 1024,
       "path": "embedding",
       "similarity": "cosine",
       "type": "vector"
+    },
+    {
+      "type": "filter",
+      "path": "status"
+    },
+    {
+      "type": "filter",
+      "path": "category"
     }
   ]
 }

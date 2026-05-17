@@ -16,21 +16,23 @@ export function createGitLabMcpClient(config: {
   token?: string;
 }): McpClient {
   const isProd = process.env.NODE_ENV === "production";
-  const baseUrl = config.baseUrl || "https://gitlab.com/api/v4/mcp/";
   
-  const args: string[] = [baseUrl];
-
-  if (config.token) {
-    args.push("--header", `Authorization: Bearer ${config.token}`);
-  }
-
   const env: Record<string, string> = {
     NPM_CONFIG_PROGRESS: "false",
+    ...process.env,
   };
 
+  if (config.token) {
+    env.GITLAB_PERSONAL_ACCESS_TOKEN = config.token;
+  }
+
+  if (config.baseUrl && config.baseUrl !== "https://gitlab.com/api/v4/mcp/") {
+    env.GITLAB_API_URL = config.baseUrl;
+  }
+
   return new McpClient({
-    command: isProd ? "mcp-remote" : "npx",
-    args: isProd ? args : ["-y", "mcp-remote@latest", ...args],
+    command: isProd ? "mcp-server-gitlab" : "npx",
+    args: isProd ? [] : ["-y", "@modelcontextprotocol/server-gitlab@latest"],
     serverName: "gitlab-mcp",
     env,
   });

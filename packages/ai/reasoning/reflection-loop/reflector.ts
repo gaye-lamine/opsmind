@@ -112,7 +112,7 @@ export class ReflectionLoop {
       ...decision,
       reflection: decisionReflection,
       confidenceScore: adjustedConfidence,
-      status: "reflected",
+      status: "finalized",
       updatedAt: new Date(),
     };
 

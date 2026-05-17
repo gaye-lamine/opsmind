@@ -35,6 +35,9 @@ RUN corepack enable && pnpm install --prod --frozen-lockfile --filter @opsmind/a
 # Pre-install MCP servers globally for instant synchronous startup
 RUN npm install -g mongodb-mcp-server@latest @modelcontextprotocol/server-gitlab@latest
 
+# Hotfix for @modelcontextprotocol/server-gitlab schema validation bug
+RUN sed -i 's/zodToJsonSchema(\([a-zA-Z0-9_]\+\))/\1.toJSONSchema()/g' /usr/local/lib/node_modules/@modelcontextprotocol/server-gitlab/dist/index.js
+
 # Copy the standalone compiled single bundle from builder
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 

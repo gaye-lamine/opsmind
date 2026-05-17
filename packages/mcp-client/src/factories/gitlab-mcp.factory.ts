@@ -20,13 +20,13 @@ export function createGitLabMcpClient(config: {
   
   const args: string[] = [baseUrl];
 
+  if (config.token) {
+    args.push("--header", `Authorization: Bearer ${config.token}`);
+  }
+
   const env: Record<string, string> = {
     NPM_CONFIG_PROGRESS: "false",
   };
-
-  if (config.token) {
-    env.GITLAB_TOKEN = config.token;
-  }
 
   return new McpClient({
     command: isProd ? "mcp-remote" : "npx",

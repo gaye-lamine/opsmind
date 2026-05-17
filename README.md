@@ -125,11 +125,31 @@ Open [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## Hackathon Track
+## 🏆 MongoDB Partner Track Integrations
+
+OpsMind is heavily optimized for the **MongoDB Partner Track**, leveraging advanced Atlas features as our primary intelligence and memory engine:
+
+* **⚡ Hybrid Search Pipeline (`$vectorSearch` + `$search`)**: A powerful dual search system. It uses **MongoDB Atlas Vector Search** for deep semantic understanding and **Atlas Search (Lucene)** for exact term matching (like "Stripe" or "404").
+* **🧠 Voyage AI Reranking (`/rerank`)**: Integrates Voyage AI's state-of-the-art `rerank-2` model to dynamically re-classify and order hybrid search results, providing surgical precision to the agent.
+* **✨ Dynamic Atlas Search Highlighting**: Projects `{ $meta: "searchHighlights" }` from MongoDB to dynamically illuminate matched text blocks inside the UI with gorgeous CSS glows, showing operators exactly *why* a historical decision is relevant.
+* **📊 Multi-Faceted Analytics (`$facet`)**: Built a complex MongoDB aggregation pipeline that aggregates operational decisions in real time, calculating the exact **Remediation Success Rate** and **Operational Priority Distribution** on our glassmorphic dashboard.
+* **🔌 Official MongoDB MCP Server**: Spawns the official `mongodb-mcp-server` via `npx` as a child process using `stdio` transport, enabling the LLM to safely list, query, and manage database collections using natural language.
+
+---
+
+## 🚀 Google Cloud Run & Secret Manager (Phase 5)
+
+OpsMind is fully conteneurised and optimized for production hosting:
+* **🐳 Standalone Docker Builds**: Separate, ultra-lightweight Dockerfiles for the Express API (`apps/api/Dockerfile`) and Next.js frontend (`apps/web/Dockerfile`) using Next.js standalone targets.
+* **🔒 GCP Secret Manager**: Fully prepared to bind critical API keys (Gemini, MongoDB, GitLab, Voyage AI) securely at runtime using GCP Secret Manager env mapping.
+* **📖 Step-by-Step Guide**: Read the [GCP Deployment Guide](docs/deployment_guide.md) to deploy OpsMind to Google Cloud Run in under 5 minutes.
+
+---
+
+## Hackathon Focus
 
 Built for the **Google Cloud Rapid Agent Hackathon** with focus on:
-- Agentic AI systems with Google Gemini
-- Google Cloud Agent Builder integration
-- MongoDB MCP integration as operational memory
-- Multi-step reasoning workflows
-- Persistent AI memory systems
+- **Agentic AI systems** using the official Google GenAI SDK (`@google/genai`) and Gemini 1.5 Pro.
+- **Enterprise-grade Partner Integrations** with MongoDB Atlas and GitLab.
+- **Persistent AI memory systems** using MongoDB as a semantic experience ledger.
+- **Multi-step reasoning loops** with mandatory critique and reflection.

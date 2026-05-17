@@ -50,6 +50,7 @@ get_env_var() {
 
 MONGODB_URI=$(get_env_var "MONGODB_URI")
 GITLAB_TOKEN=$(get_env_var "GITLAB_TOKEN")
+GITLAB_PROJECT_ID=$(get_env_var "GITLAB_PROJECT_ID")
 VOYAGE_API_KEY=$(get_env_var "VOYAGE_API_KEY")
 ATLAS_MCP_CLIENT_ID=$(get_env_var "ATLAS_MCP_CLIENT_ID")
 ATLAS_MCP_CLIENT_SECRET=$(get_env_var "ATLAS_MCP_CLIENT_SECRET")
@@ -144,7 +145,7 @@ gcloud run deploy "${APP_NAME}-api" \
   --platform=managed \
   --allow-unauthenticated \
   --port=8080 \
-  --set-env-vars="USE_VERTEX_AI=true,GOOGLE_CLOUD_PROJECT_ID=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${LOCATION},NODE_ENV=production,CORS_ORIGINS=*" \
+  --set-env-vars="USE_VERTEX_AI=true,GOOGLE_CLOUD_PROJECT_ID=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${LOCATION},NODE_ENV=production,CORS_ORIGINS=*,GITLAB_PROJECT_ID=${GITLAB_PROJECT_ID}" \
   --update-secrets="MONGODB_URI=MONGODB_URI:latest,GITLAB_TOKEN=GITLAB_TOKEN:latest,VOYAGE_API_KEY=VOYAGE_API_KEY:latest,ATLAS_MCP_CLIENT_ID=ATLAS_MCP_CLIENT_ID:latest,ATLAS_MCP_CLIENT_SECRET=ATLAS_MCP_CLIENT_SECRET:latest"
 
 API_URL=$(gcloud run services describe "${APP_NAME}-api" --region=$LOCATION --format="value(status.url)")

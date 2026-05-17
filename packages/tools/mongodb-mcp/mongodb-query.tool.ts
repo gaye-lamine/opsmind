@@ -98,13 +98,7 @@ export class MongoDbQueryTool extends BaseTool<MongoDbQueryInput, MongoDbQueryOu
       );
     }
 
-    if (!mcpClient.isConnected) {
-      return toolFailure(
-        "MCP_NOT_CONNECTED",
-        "MongoDB MCP client is not connected.",
-        0
-      );
-    }
+    // Let lazy reconnection inside mcpClient.execute handle connection state automatically.
 
     const start = Date.now();
 

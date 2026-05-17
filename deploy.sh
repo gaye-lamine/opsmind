@@ -141,7 +141,7 @@ gcloud run deploy "${APP_NAME}-api" \
   --platform=managed \
   --allow-unauthenticated \
   --port=8080 \
-  --set-env-vars="USE_VERTEX_AI=true,GOOGLE_CLOUD_PROJECT_ID=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${LOCATION},NODE_ENV=production,PORT=8080" \
+  --set-env-vars="USE_VERTEX_AI=true,GOOGLE_CLOUD_PROJECT_ID=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${LOCATION},NODE_ENV=production" \
   --update-secrets="MONGODB_URI=MONGODB_URI:latest,GITLAB_TOKEN=GITLAB_TOKEN:latest,VOYAGE_API_KEY=VOYAGE_API_KEY:latest,ATLAS_MCP_CLIENT_ID=ATLAS_MCP_CLIENT_ID:latest,ATLAS_MCP_CLIENT_SECRET=ATLAS_MCP_CLIENT_SECRET:latest"
 
 API_URL=$(gcloud run services describe "${APP_NAME}-api" --region=$LOCATION --format="value(status.url)")
@@ -166,8 +166,7 @@ gcloud run deploy "${APP_NAME}-web" \
   --region=$LOCATION \
   --platform=managed \
   --allow-unauthenticated \
-  --port=3000 \
-  --set-env-vars="PORT=3000"
+  --port=3000
 
 WEB_URL=$(gcloud run services describe "${APP_NAME}-web" --region=$LOCATION --format="value(status.url)")
 

@@ -80,48 +80,51 @@ export class AgentRuntime {
     initializeTools();
     logger.info("Tool registry initialized");
 
-    // 5. Initialize MongoDB Atlas MCP Client (official MongoDB MCP Server)
+    // 5. Initialize MongoDB Atlas MCP Client in the background (does not block port binding on Cloud Run)
     const env = getEnv();
     if (env.MONGODB_URI !== undefined) {
-      try {
-        const mcpConfig: any = {
-          connectionString: env.MONGODB_URI,
-          readOnly: true,
-        };
+      const mcpConfig: any = {
+        connectionString: env.MONGODB_URI,
+        readOnly: true,
+      };
 
-        if (env.ATLAS_MCP_CLIENT_ID) {
-          mcpConfig.atlasClientId = env.ATLAS_MCP_CLIENT_ID;
-        }
-        if (env.ATLAS_MCP_CLIENT_SECRET) {
-          mcpConfig.atlasClientSecret = env.ATLAS_MCP_CLIENT_SECRET;
-        }
-
-        await initializeMongoDbMcpClient(mcpConfig);
-        logger.info("MongoDB Atlas MCP client initialized");
-      } catch (err) {
-        // Non-fatal — system works without MCP client, just with fewer tools
-        logger.warn("MongoDB Atlas MCP client failed to initialize — continuing without it", {
-          error: err instanceof Error ? err.message : String(err),
-        });
+      if (env.ATLAS_MCP_CLIENT_ID) {
+        mcpConfig.atlasClientId = env.ATLAS_MCP_CLIENT_ID;
       }
+      if (env.ATLAS_MCP_CLIENT_SECRET) {
+        mcpConfig.atlasClientSecret = env.ATLAS_MCP_CLIENT_SECRET;
+      }
+
+      initializeMongoDbMcpClient(mcpConfig)
+        .then(() => {
+          logger.info("MongoDB Atlas MCP client initialized successfully in background");
+        })
+        .catch((err) => {
+          logger.warn("MongoDB Atlas MCP client failed to initialize in background — continuing without it", {
+            error: err instanceof Error ? err.message : String(err),
+          });
+        });
     } else {
       logger.warn("MONGODB_URI not configured — cannot initialize MongoDB MCP client");
     }
 
-    // 6. Initialize GitLab MCP Client (Official Partner)
+    // 6. Initialize GitLab MCP Client in the background (Official Partner)
     if (env.GITLAB_TOKEN !== undefined) {
-      try {
-        const { initializeGitLabMcpClient } = await import("@opsmind/mcp-client");
-        await initializeGitLabMcpClient({
-          token: env.GITLAB_TOKEN,
-          baseUrl: env.GITLAB_BASE_URL,
+      import("@opsmind/mcp-client")
+        .then(({ initializeGitLabMcpClient }) => {
+          return initializeGitLabMcpClient({
+            token: env.GITLAB_TOKEN!,
+            baseUrl: env.GITLAB_BASE_URL,
+          });
+        })
+        .then(() => {
+          logger.info("GitLab MCP client initialized successfully in background");
+        })
+        .catch((err) => {
+          logger.warn("GitLab MCP client failed to initialize in background — continuing without it", {
+            error: err instanceof Error ? err.message : String(err),
+          });
         });
-        logger.info("GitLab MCP client initialized");
-      } catch (err) {
-        logger.warn("GitLab MCP client failed to initialize — continuing without it", {
-          error: err instanceof Error ? err.message : String(err),
-        });
-      }
     } else {
       logger.info("GITLAB_TOKEN not configured — skipping GitLab MCP client init");
     }

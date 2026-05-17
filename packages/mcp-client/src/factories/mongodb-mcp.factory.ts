@@ -20,6 +20,7 @@ import { type MongoDbMcpConfig } from "../types/mcp-client.types";
  */
 export function createMongoDbMcpClient(config: MongoDbMcpConfig): McpClient {
   const args: string[] = [
+    "-y",
     "mongodb-mcp-server@latest",
     "--connectionString",
     config.connectionString,

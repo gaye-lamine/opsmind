@@ -25,10 +25,14 @@ export function createApp(): Application {
   const app = express();
   const env = getEnv();
 
+  const corsOrigin = env.CORS_ORIGINS === "*"
+    ? "*"
+    : env.CORS_ORIGINS.split(",").map((o) => o.trim());
+
   // ── Security ────────────────────────────────────────────────────────────────
   app.use(
     cors({
-      origin: env.CORS_ORIGINS.split(",").map((o) => o.trim()),
+      origin: corsOrigin,
       methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization", "x-request-id"],
       exposedHeaders: ["x-request-id"],

@@ -38,6 +38,12 @@ RUN npm install -g mongodb-mcp-server@latest @modelcontextprotocol/server-gitlab
 # Hotfix for @modelcontextprotocol/server-gitlab schema validation bug
 RUN sed -i 's/zodToJsonSchema(\([a-zA-Z0-9_]\+\))/\1.toJSONSchema()/g' /usr/local/lib/node_modules/@modelcontextprotocol/server-gitlab/dist/index.js
 
+# Hotfix for @modelcontextprotocol/server-gitlab labels parsing bug (GitLab API returns array of strings, schema expects array of objects)
+RUN sed -i 's/labels: z.array(GitLabLabelSchema)/labels: z.array(z.any())/g' /usr/local/lib/node_modules/@modelcontextprotocol/server-gitlab/dist/schemas.js
+
+# Hotfix for @modelcontextprotocol/server-gitlab unhandled validation error formatting bug
+RUN sed -i 's/error.errors.map/(error.errors || error.issues || []).map/g' /usr/local/lib/node_modules/@modelcontextprotocol/server-gitlab/dist/index.js
+
 # Copy the standalone compiled single bundle from builder
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 

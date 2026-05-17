@@ -40,68 +40,122 @@ export function InvestigationLauncher() {
     PIPELINE_STEPS.map((s) => ({ ...s, status: "pending" as const }))
   );
 
+  const connectSseStream = (sessionId: string, currentGoal: string) => {
+    setIsRunning(true);
+    setError(null);
+
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
+    const eventSource = new EventSource(`${baseUrl}/agent/sessions/${sessionId}/stream`);
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "session_not_found") {
+        eventSource.close();
+        setIsRunning(false);
+        localStorage.removeItem("active_investigation_session_id");
+        localStorage.removeItem("active_investigation_goal");
+        localStorage.removeItem("active_investigation_steps");
+        return;
+      }
+
+      // Handle major pipeline steps
+      if (data.type === "step_started") {
+        setSteps((prev) => {
+          const next = prev.map((s) => (s.id === data.step ? { ...s, status: "active" as const } : s));
+          localStorage.setItem("active_investigation_steps", JSON.stringify(next));
+          return next;
+        });
+      }
+
+      if (data.type === "step_completed") {
+        setSteps((prev) => {
+          const next = prev.map((s) => (s.id === data.step ? { ...s, status: "complete" as const, durationMs: data.durationMs } : s));
+          localStorage.setItem("active_investigation_steps", JSON.stringify(next));
+          return next;
+        });
+      }
+
+      if (data.type === "session_completed") {
+        eventSource.close();
+        setSteps((prev) => prev.map((s) => ({ ...s, status: "complete" as const })));
+        localStorage.removeItem("active_investigation_session_id");
+        localStorage.removeItem("active_investigation_goal");
+        localStorage.removeItem("active_investigation_steps");
+        setTimeout(() => {
+          router.push(`/decisions/${data.decisionId}`);
+        }, 800);
+      }
+
+      if (data.type === "session_failed") {
+        eventSource.close();
+        setError(data.error ?? "Investigation failed during execution");
+        setIsRunning(false);
+        setSteps((prev) =>
+          prev.map((s) => (s.status === "active" ? { ...s, status: "failed" as const } : s))
+        );
+        localStorage.removeItem("active_investigation_session_id");
+        localStorage.removeItem("active_investigation_goal");
+        localStorage.removeItem("active_investigation_steps");
+      }
+    };
+
+    eventSource.onerror = () => {
+      eventSource.close();
+      if (localStorage.getItem("active_investigation_session_id") === sessionId) {
+        setError("Connection to reasoning engine lost");
+        setIsRunning(false);
+        localStorage.removeItem("active_investigation_session_id");
+        localStorage.removeItem("active_investigation_goal");
+        localStorage.removeItem("active_investigation_steps");
+      }
+    };
+
+    return eventSource;
+  };
+
+  useEffect(() => {
+    const activeSessionId = localStorage.getItem("active_investigation_session_id");
+    const activeGoal = localStorage.getItem("active_investigation_goal");
+    const activeSteps = localStorage.getItem("active_investigation_steps");
+
+    if (activeSessionId && activeGoal) {
+      setGoal(activeGoal);
+      if (activeSteps) {
+        try {
+          setSteps(JSON.parse(activeSteps));
+        } catch {
+          // ignore parsing error
+        }
+      }
+      const eventSource = connectSseStream(activeSessionId, activeGoal);
+
+      return () => {
+        if (eventSource) {
+          eventSource.close();
+        }
+      };
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!goal.trim() || isRunning) return;
 
     setIsRunning(true);
     setError(null);
-    setSteps(PIPELINE_STEPS.map((s) => ({ ...s, status: "pending" as const })));
+    const initialSteps = PIPELINE_STEPS.map((s) => ({ ...s, status: "pending" as const }));
+    setSteps(initialSteps);
 
     try {
       const { sessionId } = await agentApi.startSession({ goal: goal.trim() });
 
-      // Start listening to the SSE stream
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api";
-      const eventSource = new EventSource(`${baseUrl}/agent/sessions/${sessionId}/stream`);
+      // Save active session metadata to localStorage
+      localStorage.setItem("active_investigation_session_id", sessionId);
+      localStorage.setItem("active_investigation_goal", goal.trim());
+      localStorage.setItem("active_investigation_steps", JSON.stringify(initialSteps));
 
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-
-        // Handle major pipeline steps
-        if (data.type === "step_started") {
-          setSteps((prev) =>
-            prev.map((s) => (s.id === data.step ? { ...s, status: "active" as const } : s))
-          );
-        }
-
-        if (data.type === "step_completed") {
-          setSteps((prev) =>
-            prev.map((s) => (s.id === data.step ? { ...s, status: "complete" as const, durationMs: data.durationMs } : s))
-          );
-        }
-
-        // Tool calls are nested within the Execution step
-        if (data.type === "tool_called") {
-          // We can optionally show which tool is running
-        }
-
-        if (data.type === "session_completed") {
-          eventSource.close();
-          // Ensure all steps are complete
-          setSteps((prev) => prev.map((s) => ({ ...s, status: "complete" as const })));
-          setTimeout(() => {
-            router.push(`/decisions/${data.decisionId}`);
-          }, 800);
-        }
-
-        if (data.type === "session_failed") {
-          eventSource.close();
-          setError(data.error ?? "Investigation failed during execution");
-          setIsRunning(false);
-          setSteps((prev) =>
-            prev.map((s) => (s.status === "active" ? { ...s, status: "failed" as const } : s))
-          );
-        }
-      };
-
-      eventSource.onerror = () => {
-        eventSource.close();
-        if (isRunning) {
-          setError("Connection to reasoning engine lost");
-          setIsRunning(false);
-        }
-      };
+      connectSseStream(sessionId, goal.trim());
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to start investigation";
       setError(message);

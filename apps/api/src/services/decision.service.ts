@@ -44,7 +44,8 @@ export class DecisionService {
       items: results.map(r => ({
         ...mapDocumentToDecision(r),
         searchScore: r.searchScore,
-        searchType: r.searchType
+        searchType: r.searchType,
+        highlightText: formatHighlights((r as any).highlights)
       })),
       total: results.length
     };
@@ -137,4 +138,15 @@ function mapDocumentToDecision(doc: DecisionDocument): Decision {
     createdAt: doc.createdAt,
     updatedAt: doc.updatedAt,
   };
+}
+
+function formatHighlights(rawHighlights: any[] | undefined): string | undefined {
+  if (!rawHighlights || rawHighlights.length === 0) return undefined;
+  const first = rawHighlights[0];
+  if (!first || !first.texts) return undefined;
+  return first.texts
+    .map((t: any) => t.type === "hit" 
+      ? `<strong class="text-accent bg-accent/10 px-1 py-0.5 rounded border border-accent/20 font-black">${t.value}</strong>` 
+      : t.value)
+    .join("");
 }

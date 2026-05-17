@@ -27,27 +27,48 @@ export class DashboardService {
   async getDashboardState(): Promise<DashboardStateResponse> {
     logger.debug("Assembling dashboard state");
 
-    const [currentState, recentDecisions, pendingActions, health] =
+    const [currentState, recentDecisions, pendingActions, health, insights] =
       await Promise.all([
         this.stateRepo.findCurrent(),
         this.decisionRepo.findRecentFinalized(5),
         this.actionRepo.findPending(),
         this.runtime.healthCheck(),
+        this.actionRepo.getOperationalInsights()
       ]);
 
     const operationalState = currentState
       ? {
           id: currentState._id,
           snapshotAt: currentState.snapshotAt,
-          metrics: currentState.metrics,
-          anomalies: currentState.anomalies,
+          metrics: currentState.metrics.map(m => cleanObject({
+            name: m.name,
+            value: m.value,
+            unit: m.unit,
+            trend: m.trend,
+            period: m.period,
+            isAnomaly: m.isAnomaly,
+            changePercent: m.changePercent,
+            baseline: m.baseline ? cleanObject(m.baseline) : undefined
+          }) as any),
+          anomalies: currentState.anomalies.map(a => cleanObject({
+            id: a.id,
+            metric: a.metric,
+            description: a.description,
+            severity: a.severity,
+            status: a.status,
+            detectedAt: a.detectedAt,
+            evidence: a.evidence,
+            resolvedAt: a.resolvedAt,
+            deviationMagnitude: a.deviationMagnitude,
+            relatedDecisionId: a.relatedDecisionId
+          }) as any),
           activeInvestigations: currentState.activeInvestigations,
           lastDecisionId: currentState.lastDecisionId,
           summary: currentState.summary,
         }
       : buildEmptyOperationalState();
 
-    const decisionSummaries = recentDecisions.map((d) => ({
+    const decisionSummaries = recentDecisions.map((d) => cleanObject({
       id: d._id,
       sessionId: d.sessionId,
       goal: d.goal,
@@ -58,17 +79,19 @@ export class DashboardService {
       summary: d.summary,
       recommendationCount: d.recommendations.length,
       createdAt: d.createdAt.toISOString(),
-    }));
+      searchScore: (d as any).searchScore,
+      searchType: (d as any).searchType,
+    }) as any);
 
-    const activeAnomalies = (currentState?.anomalies ?? []).filter(
+    const activeAnomalies = (operationalState.anomalies as any[]).filter(
       (a) => a.status !== "resolved" && a.status !== "dismissed"
     );
 
     return {
-      operationalState,
+      operationalState: operationalState as any,
       recentDecisions: decisionSummaries,
-      activeAnomalies,
-      pendingActions: pendingActions.map((a) => ({
+      activeAnomalies: activeAnomalies as any,
+      pendingActions: pendingActions.map((a) => cleanObject({
         id: a._id,
         title: a.title,
         description: a.description,
@@ -78,13 +101,14 @@ export class DashboardService {
         estimatedImpact: a.estimatedImpact,
         timeframe: a.timeframe,
         risks: a.risks,
-      })),
+      }) as any),
       systemHealth: {
-        status: health.status,
-        agentStatus: health.bootstrapped ? "ready" : "not_bootstrapped",
+        status: health.status === "unhealthy" ? "critical" : health.status,
+        agentStatus: health.toolRegistry ? "ready" : "not_bootstrapped",
         memoryStatus: health.mongodb ? "connected" : "disconnected",
         lastActivityAt: new Date().toISOString(),
       },
+      insights
     };
   }
 }
@@ -98,4 +122,14 @@ function buildEmptyOperationalState(): DashboardStateResponse["operationalState"
     activeInvestigations: [],
     summary: "No operational state available. Run an agent session to initialize.",
   };
+}
+
+function cleanObject<T extends Record<string, any>>(obj: T): T {
+  const result = { ...obj };
+  for (const key of Object.keys(result)) {
+    if (result[key] === undefined) {
+      delete result[key];
+    }
+  }
+  return result;
 }

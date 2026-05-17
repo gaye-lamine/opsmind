@@ -114,12 +114,34 @@ export function DecisionTable({ decisions, pagination, isLoading }: DecisionTabl
             className="grid grid-cols-12 gap-3 items-center hover:border-border-strong hover:bg-surface-3 transition-all cursor-pointer"
           >
             <div className="col-span-5 min-w-0">
-              <p className="text-xs font-medium text-text-primary truncate">
-                {truncate(decision.goal, 100)}
-              </p>
-              <p className="text-2xs text-text-muted mt-0.5 line-clamp-1">
-                {truncate(decision.summary, 80)}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs font-medium text-text-primary truncate">
+                  {truncate(decision.goal, 85)}
+                </p>
+                {decision.searchType && (
+                  <Badge
+                    variant={decision.searchType === "hybrid" ? "accent" : "muted"}
+                    className="font-black text-[8px] px-1.5 py-0 h-4 border border-white/5 shrink-0 bg-white/5"
+                  >
+                    {decision.searchType}
+                  </Badge>
+                )}
+                {decision.searchScore !== undefined && decision.searchScore > 0 && (
+                  <span className="text-[8px] font-black text-accent shrink-0 uppercase tracking-widest bg-accent/15 px-1 py-0.5 rounded border border-accent/35">
+                    {Math.round(decision.searchScore * 100)}% match
+                  </span>
+                )}
+              </div>
+              {decision.highlightText ? (
+                <p 
+                  className="text-2xs text-text-muted mt-0.5 line-clamp-1"
+                  dangerouslySetInnerHTML={{ __html: decision.highlightText }}
+                />
+              ) : (
+                <p className="text-2xs text-text-muted mt-0.5 line-clamp-1">
+                  {truncate(decision.summary, 80)}
+                </p>
+              )}
             </div>
 
             <div className="col-span-2">

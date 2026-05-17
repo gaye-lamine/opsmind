@@ -1,5 +1,5 @@
 import { type Filter, type Sort } from "mongodb";
-import { COLLECTION_NAMES } from "@opsmind/config";
+import { COLLECTION_NAMES, getEnv } from "@opsmind/config";
 import { type DecisionQueryDto } from "@opsmind/shared";
 import { BaseRepository, type PaginatedResult } from "./base.repository";
 import {
@@ -162,7 +162,7 @@ export class DecisionRepository extends BaseRepository<DecisionDocument> {
 
         // 2. Full-Text Search (Atlas Search)
         // Note: This will only work if the user creates a search index named "default"
-        collection.aggregate<DecisionDocument & { score: number }>([
+        collection.aggregate<DecisionDocument & { score: number; highlights?: any }>([
           {
             $search: {
               index: "default",
@@ -170,12 +170,31 @@ export class DecisionRepository extends BaseRepository<DecisionDocument> {
                 query: query,
                 path: ["goal", "summary", "findings.title", "findings.description"],
                 fuzzy: { maxEdits: 1 }
+              },
+              highlight: {
+                path: ["goal", "summary", "findings.title", "findings.description"]
               }
             }
           },
           { $match: { status: "finalized" } },
           { $limit: limit },
-          { $addFields: { score: { $meta: "searchScore" } } }
+          {
+            $project: {
+              _id: 1,
+              sessionId: 1,
+              goal: 1,
+              category: 1,
+              summary: 1,
+              findings: 1,
+              recommendations: 1,
+              confidenceScore: 1,
+              confidenceLevel: 1,
+              createdAt: 1,
+              status: 1,
+              score: { $meta: "searchScore" },
+              highlights: { $meta: "searchHighlights" }
+            }
+          }
         ]).toArray().catch(() => [])
       ]);
 
@@ -203,17 +222,78 @@ export class DecisionRepository extends BaseRepository<DecisionDocument> {
           // It's in both! Combine normalized scores and mark as hybrid
           existing.searchScore += normalizedScore;
           existing.searchType = "hybrid";
+          if (doc.highlights) {
+            (existing as any).highlights = doc.highlights;
+          }
         } else {
           resultsMap.set(doc._id, {
             ...doc,
             searchScore: normalizedScore,
-            searchType: "text"
-          });
+            searchType: "text",
+            highlights: doc.highlights
+          } as any);
         }
       });
 
+      const mergedResults = Array.from(resultsMap.values());
+
+      // 3. Optional Voyage AI Rerank
+      const env = getEnv();
+      if (env.VOYAGE_API_KEY && mergedResults.length > 0) {
+        try {
+          this.logger.info("Performing semantic reranking via Voyage AI", {
+            query,
+            candidatesCount: mergedResults.length
+          });
+
+          const documents = mergedResults.map(r => `${r.goal} ${r.summary}`);
+          const rerankResponse = await fetch("https://api.voyageai.com/v1/rerank", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${env.VOYAGE_API_KEY}`
+            },
+            body: JSON.stringify({
+              query,
+              documents,
+              model: "rerank-2",
+              top_k: limit
+            })
+          });
+
+          if (rerankResponse.ok) {
+            const rerankResult = await rerankResponse.json() as {
+              data: Array<{ index: number; relevance_score: number }>;
+            };
+
+            const rerankedResults = rerankResult.data.map(item => {
+              const doc = mergedResults[item.index];
+              if (doc) {
+                return {
+                  ...doc,
+                  searchScore: item.relevance_score,
+                };
+              }
+              return null;
+            }).filter(Boolean) as typeof mergedResults;
+
+            return rerankedResults;
+          } else {
+            const errorText = await rerankResponse.text();
+            this.logger.warn("Voyage AI reranking API returned error", {
+              status: rerankResponse.status,
+              error: errorText
+            });
+          }
+        } catch (rerankError) {
+          this.logger.error("Voyage AI reranking failed — returning default hybrid sorted results", {
+            error: rerankError instanceof Error ? rerankError.message : String(rerankError)
+          });
+        }
+      }
+
       // Sort by combined score and limit
-      return Array.from(resultsMap.values())
+      return mergedResults
         .sort((a, b) => b.searchScore - a.searchScore)
         .slice(0, limit);
 

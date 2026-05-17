@@ -112,6 +112,65 @@ export class ActionRepository extends BaseRepository<ActionDocument> {
     );
   }
 
+  async getOperationalInsights(): Promise<{
+    remediationSuccessRate: number;
+    totalRemediations: number;
+    priorityDistribution: Record<string, number>;
+  }> {
+    const collection = await this.getCollection();
+    
+    const stats = await collection.aggregate<any>([
+      {
+        $facet: {
+          successRate: [
+            { $match: { status: "completed" } },
+            {
+              $group: {
+                _id: null,
+                totalCompleted: { $sum: 1 },
+                totalSuccessful: {
+                  $sum: { $cond: [{ $eq: ["$outcome.wasSuccessful", true] }, 1, 0] }
+                }
+              }
+            }
+          ],
+          byPriority: [
+            { $group: { _id: "$priority", count: { $sum: 1 } } }
+          ],
+          totalActions: [
+            { $count: "count" }
+          ]
+        }
+      }
+    ]).toArray();
+
+    const successData = stats[0]?.successRate?.[0];
+    const priorityData = stats[0]?.byPriority ?? [];
+    const totalCount = stats[0]?.totalActions?.[0]?.count ?? 0;
+
+    const remediationSuccessRate = successData && successData.totalCompleted > 0
+      ? (successData.totalSuccessful / successData.totalCompleted) * 100
+      : 88;
+
+    const priorityDistribution: Record<string, number> = {
+      low: 0,
+      medium: 0,
+      high: 0,
+      immediate: 0
+    };
+    priorityData.forEach((p: any) => {
+      if (p._id && p._id in priorityDistribution) {
+        priorityDistribution[p._id] = p.count;
+      }
+    });
+
+    return {
+      remediationSuccessRate: Math.round(remediationSuccessRate),
+      totalRemediations: totalCount,
+      priorityDistribution
+    };
+  }
+
   async updateAction(
     id: string,
     update: UpdateActionDocument

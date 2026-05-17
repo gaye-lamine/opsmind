@@ -5,6 +5,7 @@ import { AnomalyPanel } from "@/components/dashboard/AnomalyPanel";
 import { RecentDecisions } from "@/components/dashboard/RecentDecisions";
 import { PendingActionsPanel } from "@/components/dashboard/PendingActionsPanel";
 import { InvestigationLauncher } from "@/components/agent/InvestigationLauncher";
+import { InsightsPanel } from "@/components/dashboard/InsightsPanel";
 
 /**
  * Dashboard page — the operational intelligence command center.
@@ -115,6 +116,11 @@ export default async function DashboardPage() {
         {/* ─── Metrics Grid ────────────────────────────────────────────────── */}
         {dashboardState && (
           <MetricsGrid metrics={dashboardState.operationalState.metrics} />
+        )}
+
+        {/* ─── AI Analytics Insights ────────────────────────────────────────── */}
+        {dashboardState && (
+          <InsightsPanel insights={dashboardState.insights} />
         )}
 
         {/* ─── Anomalies + Pending Actions ─────────────────────────────────── */}

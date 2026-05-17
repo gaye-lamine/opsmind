@@ -92,6 +92,9 @@ export interface DecisionSummary {
   summary: string;
   recommendationCount: number;
   createdAt: string;
+  searchScore?: number;
+  searchType?: "text" | "vector" | "hybrid";
+  highlightText?: string;
 }
 
 export interface DecisionDetailResponse {
@@ -118,6 +121,11 @@ export interface DashboardStateResponse {
   activeAnomalies: import("./memory").DetectedAnomaly[];
   pendingActions: import("./decision").ActionRecommendation[];
   systemHealth: SystemHealth;
+  insights?: {
+    remediationSuccessRate: number;
+    totalRemediations: number;
+    priorityDistribution: Record<string, number>;
+  };
 }
 
 export interface SystemHealth {

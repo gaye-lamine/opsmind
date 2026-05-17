@@ -26,7 +26,7 @@ export function createGitLabMcpClient(config: {
     env.GITLAB_PERSONAL_ACCESS_TOKEN = config.token;
   }
 
-  if (config.baseUrl && config.baseUrl !== "https://gitlab.com/api/v4/mcp/") {
+  if (config.baseUrl && !config.baseUrl.includes("/api/v4/mcp")) {
     env.GITLAB_API_URL = config.baseUrl;
   }
 

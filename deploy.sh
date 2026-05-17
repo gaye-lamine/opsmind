@@ -100,13 +100,16 @@ upload_secret "VOYAGE_API_KEY" "$VOYAGE_API_KEY"
 upload_secret "ATLAS_MCP_CLIENT_ID" "$ATLAS_MCP_CLIENT_ID"
 upload_secret "ATLAS_MCP_CLIENT_SECRET" "$ATLAS_MCP_CLIENT_SECRET"
 
-# 4.5. Grant Secret Manager Access to the default Cloud Run Service Account
-echo -e "\n${BLUE}[4.5/7] Granting Secret Manager Access to Cloud Run Service Account...${NC}"
+# 4.5. Grant Secret Manager + Vertex AI Access to the default Cloud Run Service Account
+echo -e "\n${BLUE}[4.5/7] Granting Secret Manager & Vertex AI Access to Cloud Run Service Account...${NC}"
 PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
 gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor" --quiet
-echo -e "${GREEN}✓ Secret Manager access granted${NC}"
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:${PROJECT_NUMBER}-compute@developer.gserviceaccount.com" \
+  --role="roles/aiplatform.user" --quiet
+echo -e "${GREEN}✓ Secret Manager & Vertex AI access granted${NC}"
 
 # 5. Create Artifact Registry
 echo -e "\n${BLUE}[5/7] Preparing Artifact Registry Repository...${NC}"

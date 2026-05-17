@@ -36,30 +36,30 @@ export function initializeTools(): void {
   logger.info("Initializing tool registry...");
 
   // ─── MongoDB Memory Tools (internal) ─────────────────────────────────────
-  registry.register(new ReadStateTool() as never);
-  registry.register(new WriteDecisionTool() as never);
-  registry.register(new UpdateMemoryTool() as never);
-  registry.register(new ActionLogTool() as never);
+  registry.register(new ReadStateTool());
+  registry.register(new WriteDecisionTool());
+  registry.register(new UpdateMemoryTool());
+  registry.register(new ActionLogTool());
 
   // ─── Analytics Tools ──────────────────────────────────────────────────────
-  registry.register(new MetricAnalyzerTool() as never);
+  registry.register(new MetricAnalyzerTool());
 
   // ─── Business Intelligence Tools ──────────────────────────────────────────
-  registry.register(new DecisionRetrieverTool() as never);
+  registry.register(new DecisionRetrieverTool());
 
   // ─── MongoDB Atlas MCP Tools (via official MongoDB MCP Server) ────────────
-  registry.register(new MongoDbQueryTool() as never);
-  registry.register(new MongoDbSchemaTool() as never);
-  registry.register(new MongoDbPerformanceTool() as never);
-  registry.register(new MongoDbVectorSearchTool() as never);
-  registry.register(new MongoDbAnalyticsTool() as never);
-  registry.register(new MongoDbListCollectionsTool() as never);
+  registry.register(new MongoDbQueryTool());
+  registry.register(new MongoDbSchemaTool());
+  registry.register(new MongoDbPerformanceTool());
+  registry.register(new MongoDbVectorSearchTool());
+  registry.register(new MongoDbAnalyticsTool());
+  registry.register(new MongoDbListCollectionsTool());
 
   // ─── Action Execution Tools (REAL ACTIONS in external systems) ────────────
-  registry.register(new PublishAlertTool() as never);
-  registry.register(new UpdateStateTool() as never);
-  registry.register(new TriggerInvestigationTool() as never);
-  registry.register(new CreateGitlabIssueTool() as never);
+  registry.register(new PublishAlertTool());
+  registry.register(new UpdateStateTool());
+  registry.register(new TriggerInvestigationTool());
+  registry.register(new CreateGitlabIssueTool());
 
   logger.info("Tool registry initialized", {
     toolCount: registry.size,

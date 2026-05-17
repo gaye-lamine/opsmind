@@ -177,29 +177,34 @@ export class DecisionRepository extends BaseRepository<DecisionDocument> {
         ]).toArray().catch(() => [])
       ]);
 
-      // Merge and deduplicate results
+      // Merge and deduplicate results with Min-Max Score Normalization
+      const maxVectorScore = vectorResults.reduce((max, doc) => Math.max(max, doc.score ?? 0), 0);
+      const maxTextScore = textResults.reduce((max, doc) => Math.max(max, doc.score ?? 0), 0);
+
       const resultsMap = new Map<string, DecisionDocument & { searchScore: number; searchType: "text" | "vector" | "hybrid" }>();
 
-      // Add vector results first
+      // Add vector results first (normalize score dynamically)
       vectorResults.forEach(doc => {
+        const normalizedScore = maxVectorScore > 0 ? (doc.score ?? 0) / maxVectorScore : 0;
         resultsMap.set(doc._id, {
           ...doc,
-          searchScore: doc.score,
+          searchScore: normalizedScore,
           searchType: "vector"
         });
       });
 
-      // Merge text results
+      // Merge text results (normalize score dynamically and sum)
       textResults.forEach(doc => {
+        const normalizedScore = maxTextScore > 0 ? (doc.score ?? 0) / maxTextScore : 0;
         const existing = resultsMap.get(doc._id);
         if (existing) {
-          // It's in both! Combine scores and mark as hybrid
-          existing.searchScore += doc.score;
+          // It's in both! Combine normalized scores and mark as hybrid
+          existing.searchScore += normalizedScore;
           existing.searchType = "hybrid";
         } else {
           resultsMap.set(doc._id, {
             ...doc,
-            searchScore: doc.score,
+            searchScore: normalizedScore,
             searchType: "text"
           });
         }

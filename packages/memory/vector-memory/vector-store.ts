@@ -70,7 +70,7 @@ export class VectorStore {
     limit: number
   ): Promise<SimilarDecision[]> {
     try {
-      const collection = await this.decisionRepo["getCollection"]();
+      const collection = await this.decisionRepo.getCollection();
 
       const pipeline = [
         {

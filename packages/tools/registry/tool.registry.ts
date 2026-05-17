@@ -30,7 +30,7 @@ export class ToolRegistry {
 
   private readonly tools = new Map<
     string,
-    ToolDefinition<Record<string, unknown>, Record<string, unknown>>
+    ToolDefinition<any, any>
   >();
 
   private constructor() {}
@@ -46,7 +46,7 @@ export class ToolRegistry {
    * Registers a tool. Throws if a tool with the same name is already registered.
    */
   register(
-    tool: ToolDefinition<Record<string, unknown>, Record<string, unknown>>
+    tool: ToolDefinition<any, any>
   ): void {
     if (this.tools.has(tool.name)) {
       throw new ToolError(
@@ -65,7 +65,7 @@ export class ToolRegistry {
    */
   get(
     name: string
-  ): ToolDefinition<Record<string, unknown>, Record<string, unknown>> {
+  ): ToolDefinition<any, any> {
     const tool = this.tools.get(name);
     if (!tool) {
       throw new ToolError(

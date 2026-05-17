@@ -36,7 +36,7 @@ export abstract class BaseRepository<TDocument extends { _id: string }> {
 
   constructor(protected readonly collectionName: string) {}
 
-  protected async getCollection(): Promise<Collection<TDocument>> {
+  public async getCollection(): Promise<Collection<TDocument>> {
     const db = await getDatabase();
     return db.collection<TDocument>(this.collectionName);
   }

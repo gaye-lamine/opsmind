@@ -12,7 +12,7 @@ import { startAgentSessionSchema, agentSessionQuerySchema } from "@opsmind/share
  * GET    /api/agent/sessions              — list recent sessions
  * GET    /api/agent/sessions/:id          — get session status
  */
-const router = Router();
+const router: Router = Router();
 const controller = new AgentController();
 
 router.post(

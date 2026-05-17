@@ -11,7 +11,7 @@ export async function withTimeout<T>(
   errorMessage: string,
   errorCode: string = ERROR_CODES.AGENT_TIMEOUT
 ): Promise<T> {
-  let timeoutHandle: NodeJS.Timeout;
+  let timeoutHandle: any;
 
   const timeoutPromise = new Promise<never>((_, reject) => {
     timeoutHandle = setTimeout(() => {

@@ -5,15 +5,14 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "typeRoots": ["../apps/api/node_modules/@types"],
-    "baseUrl": ".",
+    "strict": true,
     "paths": {
-      "dotenv": ["../apps/api/node_modules/dotenv"],
-      "mongodb": ["../apps/api/node_modules/mongodb"],
-      "@opsmind/mcp-client": ["../packages/mcp-client/src"],
-      "@opsmind/tools": ["../packages/tools/src"]
+      "@opsmind/config": ["../packages/config/src/index.ts"],
+      "@opsmind/memory": ["../packages/memory/src/index.ts"],
+      "@opsmind/shared": ["../packages/shared/src/index.ts"],
+      "@opsmind/tools":  ["../packages/tools/src/index.ts"],
+      "@opsmind/ai":     ["../packages/ai/src/index.ts"]
     }
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*"]
 }

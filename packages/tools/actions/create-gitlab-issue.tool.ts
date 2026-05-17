@@ -114,10 +114,10 @@ export class CreateGitlabIssueTool extends BaseTool<CreateGitlabIssueInput, Crea
 
       // Execute the 'create_issue' tool on the GitLab MCP Server
       const result = await gitlabMcp.execute("create_issue", {
-        id: projectId,
+        project_id: String(projectId),
         title: input.title,
         description: input.description,
-        labels: labels.join(","),
+        labels: labels,
       });
 
       const durationMs = Date.now() - start;

@@ -70,7 +70,7 @@ export default async function DashboardPage() {
               },
               {
                 label: "Memory Entries",
-                value: dashboardState?.systemHealth?.totalDecisions ?? dashboardState?.recentDecisions.length ?? 0,
+                value: (dashboardState?.systemHealth as any)?.totalDecisions ?? dashboardState?.recentDecisions.length ?? 0,
                 icon: "💾",
                 suffix: " decisions",
               },

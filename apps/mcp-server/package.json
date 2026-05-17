@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
+    "@opsmind/ai": "workspace:*",
     "@opsmind/config": "workspace:*",
     "@opsmind/memory": "workspace:*",
     "@opsmind/shared": "workspace:*",

@@ -52,7 +52,7 @@ export function AnomalyPanel({ anomalies }: AnomalyPanelProps) {
       ) : (
         <div className="divide-y divide-white/[0.03] overflow-y-auto flex-1 custom-scrollbar">
           {active.map((anomaly, i) => {
-            const config = severityConfig[anomaly.severity] ?? severityConfig.low;
+            const config = (severityConfig[anomaly.severity] ?? severityConfig.low) as { variant: "danger" | "warning" | "muted"; color: string; border: string };
             return (
               <div 
                 key={anomaly.id} 

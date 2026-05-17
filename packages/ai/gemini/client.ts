@@ -1,5 +1,5 @@
 import { type ZodSchema } from "zod";
-import { getCloudConfig } from "@opsmind/config";
+import { getCloudConfig, getEnv } from "@opsmind/config";
 import { createLogger, AIError, ERROR_CODES } from "@opsmind/shared";
 
 const logger = createLogger("GeminiClient");
@@ -363,8 +363,83 @@ export function getGeminiClient(): GeminiClient {
  * Failure is non-fatal — the decision is persisted without an embedding
  * and falls back to recency-based retrieval.
  */
-export async function generateEmbedding(text: string): Promise<number[] | null> {
+export async function generateEmbedding(
+  text: string,
+  inputType?: "query" | "document"
+): Promise<number[] | null> {
   const config = getCloudConfig();
+  const env = getEnv();
+
+  // 1. If Voyage AI is configured, use it first
+  if (env.VOYAGE_API_KEY) {
+    logger.info("Generating embedding using Voyage AI", {
+      model: env.VOYAGE_MODEL,
+      inputType,
+      textLength: text.length,
+    });
+    try {
+      let response = await fetch("https://api.voyageai.com/v1/embeddings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${env.VOYAGE_API_KEY}`,
+        },
+        body: JSON.stringify({
+          input: [text.slice(0, 4000)], // Voyage AI has a large context, truncate safely to 4000 chars
+          model: env.VOYAGE_MODEL,
+          input_type: inputType,
+        }),
+      });
+
+      // Handle 429 Rate Limits gracefully (especially for free tier with 3 RPM limit)
+      if (response.status === 429) {
+        logger.warn("Voyage AI rate limit hit (429). Waiting 20 seconds before retry...");
+        await sleep(20000);
+        response = await fetch("https://api.voyageai.com/v1/embeddings", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${env.VOYAGE_API_KEY}`,
+          },
+          body: JSON.stringify({
+            input: [text.slice(0, 4000)],
+            model: env.VOYAGE_MODEL,
+            input_type: inputType,
+          }),
+        });
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        logger.error("Voyage AI API error response", {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText,
+        });
+        throw new Error(`Voyage AI API returned status ${response.status}: ${errorText}`);
+      }
+
+      const result = (await response.json()) as {
+        data: Array<{ embedding: number[]; index: number }>;
+      };
+
+      const embedding = result.data?.[0]?.embedding;
+      if (!Array.isArray(embedding)) {
+        logger.warn("Voyage AI returned invalid embedding format", { result });
+        return null;
+      }
+
+      return embedding;
+    } catch (error) {
+      logger.error("Voyage AI embedding generation failure", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      // Fallback to Gemini if Voyage fails
+      logger.info("Falling back to Gemini embedding generation");
+    }
+  }
+
+  // 2. Default: Google Gemini embedding
   const embeddingModel = "text-embedding-004";
 
   try {
@@ -411,6 +486,7 @@ export async function generateEmbedding(text: string): Promise<number[] | null> 
     return null;
   }
 }
+
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

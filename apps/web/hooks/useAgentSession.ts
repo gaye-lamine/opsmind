@@ -33,7 +33,7 @@ export function useAgentSession() {
           });
         }, 8000);
 
-        const result = await agentApi.startSession(request);
+        const result = await agentApi.startSessionSync(request);
         clearInterval(stepTimer);
 
         setState({ status: "completed", result });

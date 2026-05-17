@@ -179,7 +179,7 @@ export class Orchestrator {
     // Only used when VECTOR_SEARCH_ENABLED=true — runs with a timeout to avoid
     // blocking the pipeline if the embedding API is slow.
     const goalEmbedding = await Promise.race([
-      generateEmbedding(goal),
+      generateEmbedding(goal, "query"),
       new Promise<null>((resolve) => setTimeout(() => resolve(null), 5000)),
     ]);
 
@@ -380,7 +380,7 @@ export class Orchestrator {
 
     // Generate and store embedding asynchronously after persist — non-blocking.
     const embeddingText = `${finalDecision.goal} ${finalDecision.summary}`;
-    generateEmbedding(embeddingText)
+    generateEmbedding(embeddingText, "document")
       .then((embedding) => {
         if (embedding !== null) {
           return this.memoryWriter.storeEmbedding(finalDecision.id, embedding);

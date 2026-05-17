@@ -15,12 +15,8 @@ import { z, type ZodSchema } from "zod";
 
 // ─── Tool Categories ──────────────────────────────────────────────────────────
 
-export type ToolCategory =
-  | "memory_read"    // Reads from MongoDB operational memory
-  | "memory_write"   // Writes to MongoDB operational memory
-  | "analytics"      // Business metric analysis
-  | "business"       // Business intelligence operations
-  | "system";        // System-level operations
+export { type ToolCategory } from "@opsmind/shared";
+
 
 // ─── Tool Definition ──────────────────────────────────────────────────────────
 
@@ -74,12 +70,7 @@ export interface ToolExecutionContext {
 
 // ─── Tool Manifest (for agent tool selection) ─────────────────────────────────
 
-export interface ToolManifest {
-  name: string;
-  description: string;
-  category: ToolCategory;
-  inputSchema: Record<string, unknown>;
-}
+export { type ToolManifest } from "@opsmind/shared";
 
 // ─── Helper: build a ToolFailure ─────────────────────────────────────────────
 

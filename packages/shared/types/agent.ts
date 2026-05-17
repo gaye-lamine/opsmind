@@ -105,3 +105,20 @@ export interface MemoryContext {
   previousOutcomes: string[];
   operationalState: Record<string, unknown>;
 }
+
+// ─── Tool Manifest & Categories ───────────────────────────────────────────────
+
+export type ToolCategory =
+  | "memory_read"    // Reads from MongoDB operational memory
+  | "memory_write"   // Writes to MongoDB operational memory
+  | "analytics"      // Business metric analysis
+  | "business"       // Business intelligence operations
+  | "system";        // System-level operations
+
+export interface ToolManifest {
+  name: string;
+  description: string;
+  category: ToolCategory;
+  inputSchema: Record<string, unknown>;
+}
+

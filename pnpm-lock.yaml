@@ -10,7 +10,7 @@ importers:
     dependencies:
       mongodb:
         specifier: ^6.21.0
-        version: 6.21.0
+        version: 6.21.0(gcp-metadata@8.1.2)
     devDependencies:
       eslint:
         specifier: ^10.3.0
@@ -56,7 +56,7 @@ importers:
         version: 4.22.1
       mongodb:
         specifier: ^6.8.0
-        version: 6.21.0
+        version: 6.21.0(gcp-metadata@8.1.2)
       zod:
         specifier: ^3.23.8
         version: 3.25.76
@@ -82,6 +82,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.12.0
         version: 1.29.0(zod@3.25.76)
+      '@opsmind/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@opsmind/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -249,7 +252,7 @@ importers:
         version: link:../shared
       mongodb:
         specifier: ^6.8.0
-        version: 6.21.0
+        version: 6.21.0(gcp-metadata@8.1.2)
       zod:
         specifier: ^3.23.8
         version: 3.25.76
@@ -279,6 +282,9 @@ importers:
       '@google-cloud/pubsub':
         specifier: ^5.3.0
         version: 5.3.0
+      '@opsmind/ai':
+        specifier: workspace:*
+        version: link:../ai
       '@opsmind/config':
         specifier: workspace:*
         version: link:../config
@@ -309,7 +315,7 @@ importers:
         version: 16.6.1
       mongodb:
         specifier: ^6.8.0
-        version: 6.21.0
+        version: 6.21.0(gcp-metadata@8.1.2)
     devDependencies:
       tsx:
         specifier: ^4.19.4
@@ -4153,11 +4159,13 @@ snapshots:
       '@types/whatwg-url': 11.0.5
       whatwg-url: 14.2.0
 
-  mongodb@6.21.0:
+  mongodb@6.21.0(gcp-metadata@8.1.2):
     dependencies:
       '@mongodb-js/saslprep': 1.4.11
       bson: 6.10.4
       mongodb-connection-string-url: 3.0.2
+    optionalDependencies:
+      gcp-metadata: 8.1.2
 
   ms@2.0.0: {}
 

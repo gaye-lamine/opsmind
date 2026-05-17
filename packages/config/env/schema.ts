@@ -70,6 +70,10 @@ export const envSchema = z.object({
   GITLAB_TOKEN: z.string().optional(),
   GITLAB_BASE_URL: z.string().url().default("https://gitlab.com/api/v4/mcp"),
   GITLAB_PROJECT_ID: z.string().optional(),
+
+  // Voyage AI
+  VOYAGE_API_KEY: z.string().optional(),
+  VOYAGE_MODEL: z.string().default("voyage-3"),
 });
 
 export type Env = z.infer<typeof envSchema>;

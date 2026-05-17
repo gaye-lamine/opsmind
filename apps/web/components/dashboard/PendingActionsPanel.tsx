@@ -49,7 +49,7 @@ export function PendingActionsPanel({ actions }: PendingActionsPanelProps) {
       ) : (
         <div className="divide-y divide-white/[0.03] overflow-y-auto flex-1 custom-scrollbar">
           {sorted.slice(0, 8).map((action, i) => {
-            const config = priorityConfig[action.priority] ?? priorityConfig.low;
+            const config = (priorityConfig[action.priority] ?? priorityConfig.low) as { variant: "danger" | "warning" | "accent" | "muted"; label: string; bg: string; text: string };
             return (
               <div 
                 key={action.id} 

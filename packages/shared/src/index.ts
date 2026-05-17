@@ -19,6 +19,8 @@ export type {
   ReasoningStepResult,
   ReasoningStepStatus,
   ToolCall,
+  ToolCategory,
+  ToolManifest,
 } from "../types/agent";
 
 export type {

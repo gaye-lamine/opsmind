@@ -82,7 +82,7 @@ export function DecisionDetail({ decision }: DecisionDetailProps) {
             <div key={finding.id} className={cn("p-5 border-l-2 border-transparent animate-slide-up", `stagger-${(i % 5) + 1}`)}>
               <div className="flex items-start gap-3">
                 <Badge
-                  variant={finding.severity === "critical" || finding.severity === "high" ? "danger" : finding.severity === "medium" ? "warning" : "muted"}
+                  variant={finding.severity === "critical" ? "danger" : finding.severity === "warning" ? "warning" : "muted"}
                   className="px-1.5 py-0 text-[9px] font-black uppercase tracking-tighter mt-0.5 shrink-0"
                 >
                   {finding.severity}

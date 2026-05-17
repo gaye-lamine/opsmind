@@ -87,7 +87,7 @@ export class MongoDbVectorSearchTool extends BaseTool<
 
     try {
       // 1. Generate embedding for the query
-      const embedding = await generateEmbedding(input.query);
+      const embedding = await generateEmbedding(input.query, "query");
 
       if (!embedding) {
         return toolFailure(

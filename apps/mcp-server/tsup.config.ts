@@ -17,6 +17,7 @@ export default defineConfig({
     "@opsmind/memory",
     "@opsmind/shared",
     "@opsmind/tools",
+    "@opsmind/ai",
   ],
   external: [
     "mongodb",
@@ -35,6 +36,7 @@ export default defineConfig({
       "@opsmind/memory": resolve(root, "packages/memory/src/index.ts"),
       "@opsmind/shared": resolve(root, "packages/shared/src/index.ts"),
       "@opsmind/tools":  resolve(root, "packages/tools/src/index.ts"),
+      "@opsmind/ai":     resolve(root, "packages/ai/src/index.ts"),
     };
   },
   sourcemap: true,

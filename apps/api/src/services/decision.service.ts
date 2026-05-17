@@ -28,7 +28,7 @@ export class DecisionService {
     logger.info("Performing hybrid search", { query, limit });
     
     // Generate embedding for the search query
-    const embedding = await generateEmbedding(query);
+    const embedding = await generateEmbedding(query, "query");
     
     if (!embedding) {
       throw new MemoryError(

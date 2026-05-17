@@ -135,16 +135,22 @@ export class McpClient implements IToolExecutor {
   ): Promise<NormalizedToolResult> {
     const start = Date.now();
 
+    // Lazy load / Reconnect if disconnected
     if (this.client === null || this.state.status !== "connected") {
-      return {
-        success: false,
-        error: {
-          code: "MCP_NOT_CONNECTED",
-          message: `MCP client is not connected to ${this.config.serverName}`,
-        },
-        durationMs: Date.now() - start,
-        source: "mcp",
-      };
+      logger.info(`Lazy reconnecting to MCP server: ${this.config.serverName}`);
+      try {
+        await this.connect();
+      } catch (error) {
+        return {
+          success: false,
+          error: {
+            code: "MCP_NOT_CONNECTED",
+            message: `MCP client failed to connect to ${this.config.serverName}: ${error instanceof Error ? error.message : String(error)}`,
+          },
+          durationMs: Date.now() - start,
+          source: "mcp",
+        };
+      }
     }
 
     logger.debug("Executing MCP tool", {

@@ -151,9 +151,9 @@ echo -e "${GREEN}✓ API Backend successfully deployed at: $API_URL${NC}"
 echo -e "\n${BLUE}[7/7] Building and deploying Next.js Frontend Dashboard...${NC}"
 WEB_IMAGE="${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${APP_NAME}-web:latest"
 
-echo "Building local Web Docker image (with static injection of API URL: $API_URL)..."
+echo "Building local Web Docker image (with static injection of API URL: $API_URL/api)..."
 docker build --platform linux/amd64 \
-  --build-arg NEXT_PUBLIC_API_URL="$API_URL" \
+  --build-arg NEXT_PUBLIC_API_URL="$API_URL/api" \
   -t $WEB_IMAGE \
   -f apps/web/Dockerfile .
 

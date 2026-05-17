@@ -32,6 +32,9 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && pnpm install --prod --frozen-lockfile --filter @opsmind/api
 
+# Pre-install MCP servers globally for instant synchronous startup
+RUN npm install -g mongodb-mcp-server@latest mcp-remote@latest
+
 # Copy the standalone compiled single bundle from builder
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 

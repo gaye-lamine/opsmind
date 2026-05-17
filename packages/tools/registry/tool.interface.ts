@@ -1,4 +1,5 @@
 import { z, type ZodSchema } from "zod";
+import { type ToolCategory, type ToolManifest } from "@opsmind/shared";
 
 /**
  * MCP Tool Interface — the contract every tool in OpsMind must implement.
@@ -15,7 +16,7 @@ import { z, type ZodSchema } from "zod";
 
 // ─── Tool Categories ──────────────────────────────────────────────────────────
 
-export { type ToolCategory } from "@opsmind/shared";
+export { type ToolCategory };
 
 
 // ─── Tool Definition ──────────────────────────────────────────────────────────
@@ -36,6 +37,8 @@ export interface ToolDefinition<
   outputSchema: ZodSchema<TOutput>;
   /** Execute the tool with validated input */
   execute(input: TInput): Promise<ToolResult<TOutput>>;
+  /** Returns the tool manifest for agent tool selection */
+  toManifest(): import("@opsmind/shared").ToolManifest;
 }
 
 // ─── Tool Result ──────────────────────────────────────────────────────────────
@@ -68,11 +71,7 @@ export interface ToolExecutionContext {
   toolCallId: string;
 }
 
-// ─── Tool Manifest (for agent tool selection) ─────────────────────────────────
-
-export { type ToolManifest } from "@opsmind/shared";
-
-// ─── Helper: build a ToolFailure ─────────────────────────────────────────────
+export { type ToolManifest };
 
 export function toolFailure(
   code: string,
@@ -82,7 +81,11 @@ export function toolFailure(
 ): ToolFailure {
   return {
     success: false,
-    error: { code, message, details },
+    error: {
+      code,
+      message,
+      ...(details !== undefined ? { details } : {}),
+    },
     durationMs,
   };
 }

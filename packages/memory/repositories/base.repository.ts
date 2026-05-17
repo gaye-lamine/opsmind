@@ -122,7 +122,7 @@ export abstract class BaseRepository<TDocument extends { _id: string }> {
   async insertOne(document: TDocument): Promise<TDocument> {
     try {
       const collection = await this.getCollection();
-      await collection.insertOne(document as WithId<TDocument>);
+      await collection.insertOne(document as any);
       return document;
     } catch (error) {
       throw new MemoryError(

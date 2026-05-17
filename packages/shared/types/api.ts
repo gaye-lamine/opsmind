@@ -66,6 +66,8 @@ export interface AgentStatusResponse {
   completedAt?: string;
   durationMs?: number;
   decisionId?: string;
+  goal?: string;
+  confidenceScore?: number;
   error?: {
     code: string;
     message: string;

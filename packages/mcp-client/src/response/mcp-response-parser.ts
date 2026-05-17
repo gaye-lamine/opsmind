@@ -29,19 +29,47 @@ export class McpResponseParser {
     raw: RawMcpCallResult,
     durationMs: number
   ): NormalizedToolResult {
-    // Extract text content from the first text block
-    const textBlock = raw.content.find((c) => c.type === "text");
-    const rawText = textBlock?.text ?? "";
+    // MongoDB MCP server sometimes returns multiple text blocks (summary + JSON).
+    // We try to find the first block that parses as valid JSON.
+    const textBlocks = raw.content.filter((c) => c.type === "text");
+    
+    let rawText = textBlocks[0]?.text ?? "";
+    let parsed: unknown = null;
+    let hasJson = false;
+
+    // Iterate through all text blocks to find JSON data
+    for (const block of textBlocks) {
+      if (!block.text) continue;
+      
+      // First, try to parse the entire block as raw JSON
+      try {
+        parsed = JSON.parse(block.text);
+        rawText = block.text; // Keep the JSON string as the active text
+        hasJson = true;
+        break; // Found the JSON payload
+      } catch {
+        // Not pure JSON. Check if it's wrapped in MCP security tags.
+        // Format: <untrusted-user-data-[uuid]> \n [JSON] \n </untrusted-user-data-[uuid]>
+        const match = block.text.match(/\n<untrusted-user-data-([^>]+)>\n([\s\S]*?)\n<\/untrusted-user-data-\1>/);
+        if (match && match[2]) {
+          try {
+            parsed = JSON.parse(match[2]);
+            rawText = match[2];
+            hasJson = true;
+            break;
+          } catch {
+            // Failed to parse extracted JSON silently
+          }
+        }
+      }
+    }
 
     // If MCP flagged this as an error, parse the error details
     if (raw.isError === true) {
       let errorDetails: Record<string, unknown> = { rawText };
 
-      try {
-        const parsed = JSON.parse(rawText) as Record<string, unknown>;
-        errorDetails = parsed;
-      } catch {
-        // rawText is not JSON — use as-is in message
+      if (hasJson && parsed && typeof parsed === "object") {
+        errorDetails = parsed as Record<string, unknown>;
       }
 
       const message =
@@ -62,25 +90,20 @@ export class McpResponseParser {
       };
     }
 
-    // Parse the JSON response
-    if (!rawText.trim()) {
-      return {
-        success: false,
-        error: {
-          code: "MCP_EMPTY_RESPONSE",
-          message: "MCP tool returned an empty response",
-        },
-        durationMs,
-        source: "mcp",
-      };
-    }
-
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(rawText);
-    } catch {
-      // Not JSON — wrap the raw text as a string result
-      // Some MCP tools return plain text (e.g. schema descriptions)
+    // If we didn't find any JSON payload, fallback to the text
+    if (!hasJson) {
+      if (!rawText.trim()) {
+        return {
+          success: false,
+          error: {
+            code: "MCP_EMPTY_RESPONSE",
+            message: "MCP tool returned an empty response",
+          },
+          durationMs,
+          source: "mcp",
+        };
+      }
+      
       return {
         success: true,
         data: { result: rawText, format: "text" },

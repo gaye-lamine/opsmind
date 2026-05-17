@@ -53,7 +53,7 @@ export class MongoDbSchemaTool extends BaseTool<MongoDbSchemaInput, MongoDbSchem
     "[MongoDB Atlas MCP] Inspects the schema of a MongoDB collection via the official MongoDB MCP Server. " +
     "REQUIRED input: { \"collection\": \"<name>\", \"database\": \"opsmind\" }. " +
     "Use this to understand the structure of data before querying. " +
-    "Available collections: decisions, sessions, operational_state, actions, execution_logs.";
+    "Available collections: decisions, sessions, operational_state, actions, execution_logs, users, metrics.";
   readonly category = "memory_read" as const;
   readonly inputSchema = mongoDbSchemaInputSchema;
   readonly outputSchema = mongoDbSchemaOutputSchema;

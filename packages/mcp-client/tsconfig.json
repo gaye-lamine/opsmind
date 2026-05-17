@@ -12,6 +12,7 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
+    "types": ["node"],
     "outDir": "./dist",
     "rootDir": "../../",
     "paths": {

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": ["../apps/api/node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "dotenv": ["../apps/api/node_modules/dotenv"],
+      "mongodb": ["../apps/api/node_modules/mongodb"],
+      "@opsmind/mcp-client": ["../packages/mcp-client/src"],
+      "@opsmind/tools": ["../packages/tools/src"]
+    }
+  },
+  "include": ["**/*.ts"]
+}

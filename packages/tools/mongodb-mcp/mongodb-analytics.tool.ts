@@ -24,6 +24,8 @@ const mongoDbAnalyticsInputSchema = z.object({
   filter: z.record(z.unknown()).optional(),
   /** Timeframe in days (default: 30) */
   timeframeDays: z.number().int().positive().optional(),
+  /** Collection name (default: decisions) */
+  collection: z.string().optional(),
 });
 
 type MongoDbAnalyticsInput = z.infer<typeof mongoDbAnalyticsInputSchema>;
@@ -69,6 +71,8 @@ export class MongoDbAnalyticsTool extends BaseTool<
     const mcpClient = getMongoDbMcpClient();
 
     const timeframeDays = input.timeframeDays ?? 30;
+    const collection = (input as any).collection ?? "decisions";
+
     try {
       let pipeline: any[] = [];
       const sinceDate = new Date();
@@ -113,7 +117,7 @@ export class MongoDbAnalyticsTool extends BaseTool<
 
       const result = await mcpClient.execute("aggregate", {
         database: "opsmind",
-        collection: "decisions",
+        collection,
         pipeline,
       });
 

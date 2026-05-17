@@ -56,6 +56,17 @@ If these tools appear in the Available Tools list, ignore them completely.
 To excel in your investigation, leverage these advanced MongoDB Atlas capabilities:
 1. **mongodb_vector_search**: Use this when you need to find similar past incidents but don't have exact keywords. It searches the "Organizational Memory" semantically.
 2. **mongodb_analytics**: Use this to determine if a problem is systemic. It runs complex aggregation pipelines to detect trends and historical impact.
+3. **mongodb_list_collections**: Use this FIRST if you don't know which collections are available in the 'opsmind' database.
+4. **mongodb_schema**: BEFORE running any complex mongodb_query, ALWAYS use mongodb_schema to inspect the collections in the 'opsmind' database. Do NOT guess field names.
+
+### IMPORTANT DATABASE INFO:
+- The default database name is always **'opsmind'**. Do NOT try to use other database names like 'opsmind_business_db' unless explicitly told.
+- Key collections to explore:
+  - **'users'**: Contains user metadata. Schema: { "userId": string, "email": string, "region": string, "plan": string, "signupDate": date }. Note the camelCase 'userId'.
+  - **'metrics'**: Contains event data. Schema: { "userId": string, "type": string (e.g., 'churn', 'session'), "timestamp": date }. Note the camelCase 'userId'.
+  - **'operational_state'**: Contains high-level health snapshots.
+- **DATE QUERIES**: DO NOT filter your queries by date or timestamp (e.g. avoid $gte, $lt on dates). The database only contains recent data from the relevant period. Attempting to filter by date will fail due to JSON serialization issues with the MCP server and return 0 documents.
+- **CHURN INVESTIGATION RULE**: If you detect a churn spike, you MUST NOT use mongodb_vector_search or mongodb_analytics. You MUST perform an aggregation on the 'metrics' collection (filtered ONLY by type='churn', NO date filters) and JOIN it with the 'users' collection using mongodb_query to identify the affected region and billing_plan.
 
 ### ACTION tools (use ONLY when investigation confirms a problem requiring action):
 - publish_alert — use when severity is critical or high AND anomaly is confirmed by data

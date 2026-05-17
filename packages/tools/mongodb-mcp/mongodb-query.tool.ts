@@ -75,7 +75,7 @@ export class MongoDbQueryTool extends BaseTool<MongoDbQueryInput, MongoDbQueryOu
     "Use operation='find' with filter to query documents. " +
     "Use operation='aggregate' with pipeline for complex analysis. " +
     "Use operation='count' to count matching documents. " +
-    "Available collections: decisions, sessions, operational_state, actions, execution_logs.";
+    "Available collections: users, metrics, operational_state (DO NOT use subscription_events or other hallucinated names).";
   readonly category = "memory_read" as const;
   readonly inputSchema = mongoDbQueryInputSchema;
   readonly outputSchema = mongoDbQueryOutputSchema;
@@ -183,7 +183,18 @@ export class MongoDbQueryTool extends BaseTool<MongoDbQueryInput, MongoDbQueryOu
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function extractDocuments(data: Record<string, unknown>): Array<Record<string, unknown>> {
+  // If data is already an array of documents (from the MCP security tags bypass)
+  if (Array.isArray(data)) {
+    return data as Array<Record<string, unknown>>;
+  }
+
   // MongoDB MCP Server returns documents in various shapes
+  if (data["cursor"] && typeof data["cursor"] === "object") {
+    const cursorObj = data["cursor"] as Record<string, unknown>;
+    if (Array.isArray(cursorObj["firstBatch"])) {
+      return cursorObj["firstBatch"] as Array<Record<string, unknown>>;
+    }
+  }
   if (Array.isArray(data["documents"])) {
     return data["documents"] as Array<Record<string, unknown>>;
   }

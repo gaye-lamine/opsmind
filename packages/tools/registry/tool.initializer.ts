@@ -11,6 +11,7 @@ import { MongoDbSchemaTool } from "../mongodb-mcp/mongodb-schema.tool";
 import { MongoDbPerformanceTool } from "../mongodb-mcp/mongodb-performance.tool";
 import { MongoDbVectorSearchTool } from "../mongodb-mcp/mongodb-vector-search.tool";
 import { MongoDbAnalyticsTool } from "../mongodb-mcp/mongodb-analytics.tool";
+import { MongoDbListCollectionsTool } from "../mongodb-mcp/mongodb-list-collections.tool";
 import { PublishAlertTool } from "../actions/publish-alert.tool";
 import { UpdateStateTool } from "../actions/update-state.tool";
 import { TriggerInvestigationTool } from "../actions/trigger-investigation.tool";
@@ -52,6 +53,7 @@ export function initializeTools(): void {
   registry.register(new MongoDbPerformanceTool() as never);
   registry.register(new MongoDbVectorSearchTool() as never);
   registry.register(new MongoDbAnalyticsTool() as never);
+  registry.register(new MongoDbListCollectionsTool() as never);
 
   // ─── Action Execution Tools (REAL ACTIONS in external systems) ────────────
   registry.register(new PublishAlertTool() as never);

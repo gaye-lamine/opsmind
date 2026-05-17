@@ -7,6 +7,7 @@ import { formatRelativeTime, formatConfidence, truncate } from "@/lib/utils";
 interface DecisionTableProps {
   decisions: DecisionSummary[];
   pagination: PaginationMeta | null;
+  isLoading?: boolean;
 }
 
 const categoryLabel: Record<string, string> = {
@@ -32,7 +33,57 @@ const confidenceVariant = (level: string): "success" | "warning" | "danger" | "m
   return "danger";
 };
 
-export function DecisionTable({ decisions, pagination }: DecisionTableProps) {
+export function DecisionTable({ decisions, pagination, isLoading }: DecisionTableProps) {
+  if (isLoading) {
+    return (
+      <div className="space-y-2">
+        {/* Table header */}
+        <div className="grid grid-cols-12 gap-3 px-4 py-2 text-2xs text-text-muted uppercase tracking-wider">
+          <div className="col-span-5">Goal</div>
+          <div className="col-span-2">Category</div>
+          <div className="col-span-1">Confidence</div>
+          <div className="col-span-1">Status</div>
+          <div className="col-span-1">Actions</div>
+          <div className="col-span-2 text-right">Time</div>
+        </div>
+
+        {/* Pulse Skeleton rows */}
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Card
+            key={i}
+            padding="sm"
+            className="grid grid-cols-12 gap-3 items-center border border-white/5 bg-white/5 animate-pulse"
+          >
+            <div className="col-span-5 space-y-2">
+              <div className="h-3.5 bg-white/10 rounded-md w-3/4" />
+              <div className="h-2.5 bg-white/5 rounded-md w-1/2" />
+            </div>
+
+            <div className="col-span-2">
+              <div className="h-5 bg-white/10 rounded-full w-20" />
+            </div>
+
+            <div className="col-span-1">
+              <div className="h-5 bg-white/10 rounded-md w-12" />
+            </div>
+
+            <div className="col-span-1">
+              <div className="h-5 bg-white/10 rounded-full w-16" />
+            </div>
+
+            <div className="col-span-1">
+              <div className="h-4 bg-white/10 rounded w-6" />
+            </div>
+
+            <div className="col-span-2 text-right">
+              <div className="h-3 bg-white/10 rounded w-16 ml-auto" />
+            </div>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
   if (decisions.length === 0) {
     return (
       <Card className="text-center py-12">

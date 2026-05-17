@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { SearchBar } from "./SearchBar";
 import { DecisionTable } from "./DecisionTable";
 import { decisionsApi, type DecisionListData } from "@/services/api-client/decisions.api";
@@ -14,7 +14,7 @@ export function DecisionExplorer({ initialData }: DecisionExplorerProps) {
   const [isSearching, setIsSearching] = useState(false);
   const [isSearchResult, setIsSearchResult] = useState(false);
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = useCallback(async (query: string) => {
     if (!query) {
       setData(initialData);
       setIsSearchResult(false);
@@ -39,7 +39,7 @@ export function DecisionExplorer({ initialData }: DecisionExplorerProps) {
     } finally {
       setIsSearching(false);
     }
-  };
+  }, [initialData]);
 
   return (
     <div className="space-y-8">
@@ -60,6 +60,7 @@ export function DecisionExplorer({ initialData }: DecisionExplorerProps) {
         <DecisionTable
           decisions={data.decisions}
           pagination={data.pagination}
+          isLoading={isSearching}
         />
       </div>
       

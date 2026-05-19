@@ -5,11 +5,13 @@ import { MemoryVisualization } from "@/components/dashboard/MemoryVisualization"
 export default async function MemoryPage() {
   let decisions = null;
   let dashboard = null;
+  let mongoStats = null;
 
   try {
-    [decisions, dashboard] = await Promise.all([
+    [decisions, dashboard, mongoStats] = await Promise.all([
       decisionsApi.list({ pageSize: 20 }),
       dashboardApi.getState(),
+      dashboardApi.getMongoStats().catch(() => ({ stats: { decisions: 0, actions: 0, states: 0, logs: 0 } })),
     ]);
   } catch {
     // Render with empty state
@@ -49,6 +51,7 @@ export default async function MemoryPage() {
           decisions={decisions?.decisions ?? []}
           operationalState={dashboard?.operationalState ?? null}
           totalDecisions={decisions?.pagination.total ?? 0}
+          mongoStats={mongoStats?.stats ?? null}
         />
       </div>
     </div>

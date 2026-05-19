@@ -3,6 +3,7 @@ import {
   OperationalStateRepository,
   DecisionRepository,
   ActionRepository,
+  ExecutionLogRepository,
 } from "@opsmind/memory";
 import { getAgentRuntime } from "@opsmind/agent";
 import { type DashboardStateResponse } from "@opsmind/shared";
@@ -22,7 +23,23 @@ export class DashboardService {
   private readonly stateRepo = new OperationalStateRepository();
   private readonly decisionRepo = new DecisionRepository();
   private readonly actionRepo = new ActionRepository();
+  private readonly logRepo = new ExecutionLogRepository();
   private readonly runtime = getAgentRuntime();
+
+  async getMongoDbStats(): Promise<Record<string, number>> {
+    const [decisions, actions, states, logs] = await Promise.all([
+      this.decisionRepo.getCollection().then((c) => c.countDocuments()).catch(() => 0),
+      this.actionRepo.getCollection().then((c) => c.countDocuments()).catch(() => 0),
+      this.stateRepo.getCollection().then((c) => c.countDocuments()).catch(() => 0),
+      this.logRepo.getCollection().then((c) => c.countDocuments()).catch(() => 0),
+    ]);
+    return {
+      decisions,
+      actions,
+      states,
+      logs,
+    };
+  }
 
   async getDashboardState(): Promise<DashboardStateResponse> {
     logger.debug("Assembling dashboard state");

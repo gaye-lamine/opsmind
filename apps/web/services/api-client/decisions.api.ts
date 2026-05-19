@@ -54,4 +54,9 @@ export const decisionsApi = {
     apiClient.get<{ decisions: DecisionSummary[]; total: number }>(
       `/decisions/search?q=${encodeURIComponent(query)}&limit=${limit}`
     ),
+
+  getSimilar: (id: string, limit: number = 3) =>
+    apiClient.get<{ decisions: DecisionSummary[]; total: number }>(
+      `/decisions/${id}/similar?limit=${limit}`
+    ),
 };

@@ -202,7 +202,7 @@ export class DecisionRepository extends BaseRepository<DecisionDocument> {
       const maxVectorScore = vectorResults.reduce((max, doc) => Math.max(max, doc.score ?? 0), 0);
       const maxTextScore = textResults.reduce((max, doc) => Math.max(max, doc.score ?? 0), 0);
 
-      const resultsMap = new Map<string, DecisionDocument & { searchScore: number; searchType: "text" | "vector" | "hybrid" }>();
+      const resultsMap = new Map<string, DecisionDocument & { searchScore: number; searchType: "text" | "vector" | "hybrid"; rerankedByVoyage?: boolean }>();
 
       // Add vector results first (normalize score dynamically)
       vectorResults.forEach(doc => {
@@ -272,6 +272,7 @@ export class DecisionRepository extends BaseRepository<DecisionDocument> {
                 return {
                   ...doc,
                   searchScore: item.relevance_score,
+                  rerankedByVoyage: true,
                 };
               }
               return null;
@@ -303,6 +304,53 @@ export class DecisionRepository extends BaseRepository<DecisionDocument> {
       return this.findRecentFinalized(limit).then(docs => 
         docs.map(d => ({ ...d, searchScore: 0, searchType: "vector" as const }))
       );
+    }
+  }
+
+  /**
+   * Finds decisions similar to a given embedding, excluding a specific ID.
+   */
+  async findSimilarToEmbedding(
+    embedding: number[],
+    limit: number,
+    excludeId: string
+  ): Promise<(DecisionDocument & { similarityScore: number })[]> {
+    try {
+      const collection = await this.getCollection();
+      const pipeline = [
+        {
+          $vectorSearch: {
+            index: "decision_vector_index",
+            path: "embedding",
+            queryVector: embedding,
+            numCandidates: limit * 10,
+            limit: limit + 1,
+            filter: { status: "finalized" }
+          }
+        },
+        {
+          $addFields: {
+            similarityScore: { $meta: "vectorSearchScore" }
+          }
+        },
+        {
+          $match: {
+            _id: { $ne: excludeId }
+          }
+        },
+        {
+          $limit: limit
+        }
+      ];
+
+      const results = await collection.aggregate<any>(pipeline).toArray();
+      return results.map((r) => ({
+        ...r,
+        similarityScore: r.similarityScore ?? 0
+      }));
+    } catch (error) {
+      this.logger.error("findSimilarToEmbedding failed", { error });
+      return [];
     }
   }
 

@@ -1,19 +1,21 @@
 import type { DecisionSummary, OperationalState } from "@opsmind/shared";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { formatRelativeTime, formatConfidence } from "@/lib/utils";
-import Link from "next/link";
+import { formatConfidence } from "@/lib/utils";
+import { SearchableMemory } from "./SearchableMemory";
 
 interface MemoryVisualizationProps {
   decisions: DecisionSummary[];
   operationalState: OperationalState | null;
   totalDecisions: number;
+  mongoStats: Record<string, number> | null;
 }
 
 export function MemoryVisualization({
   decisions,
   operationalState,
   totalDecisions,
+  mongoStats,
 }: MemoryVisualizationProps) {
   // Group decisions by category for pattern visualization
   const byCategory = decisions.reduce<Record<string, DecisionSummary[]>>(
@@ -59,77 +61,71 @@ export function MemoryVisualization({
         </Card>
       </div>
 
-      {/* Decision categories breakdown */}
-      <Card padding="none">
-        <div className="p-4 border-b border-border">
-          <CardTitle>Decision Categories</CardTitle>
-        </div>
-        <div className="p-4">
-          {Object.keys(byCategory).length === 0 ? (
-            <p className="text-sm text-text-muted text-center py-4">
-              No decisions in memory yet.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {Object.entries(byCategory).map(([category, items]) => {
-                const pct = Math.round((items.length / decisions.length) * 100);
-                return (
-                  <div key={category}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-text-secondary">
-                        {category.replace(/_/g, " ")}
-                      </span>
-                      <span className="text-xs text-text-muted">
-                        {items.length} ({pct}%)
-                      </span>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Decision categories breakdown */}
+        <Card padding="none">
+          <div className="p-4 border-b border-border">
+            <CardTitle>Decision Categories</CardTitle>
+          </div>
+          <div className="p-4">
+            {Object.keys(byCategory).length === 0 ? (
+              <p className="text-sm text-text-muted text-center py-4">
+                No decisions in memory yet.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {Object.entries(byCategory).map(([category, items]) => {
+                  const pct = Math.round((items.length / decisions.length) * 100);
+                  return (
+                    <div key={category}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs text-text-secondary">
+                          {category.replace(/_/g, " ")}
+                        </span>
+                        <span className="text-xs text-text-muted">
+                          {items.length} ({pct}%)
+                        </span>
+                      </div>
+                      <div className="h-1.5 bg-surface-3 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-accent rounded-full transition-all"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-1.5 bg-surface-3 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-accent rounded-full transition-all"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </Card>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </Card>
 
-      {/* Decision timeline */}
-      <Card padding="none">
-        <div className="p-4 border-b border-border">
-          <CardTitle>Decision Timeline</CardTitle>
-        </div>
-        <div className="divide-y divide-border">
-          {decisions.length === 0 ? (
-            <div className="p-6 text-center">
-              <p className="text-sm text-text-muted">No decisions recorded yet.</p>
-            </div>
-          ) : (
-            decisions.map((d) => (
-              <Link key={d.id} href={`/decisions/${d.id}`}>
-                <div className="flex items-center gap-4 p-4 hover:bg-surface-3 transition-colors cursor-pointer">
-                  <div className="w-1 h-8 rounded-full bg-accent flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-text-primary truncate">{d.goal}</p>
-                    <p className="text-2xs text-text-muted mt-0.5">{d.category.replace(/_/g, " ")}</p>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Badge variant={d.confidenceLevel === "high" || d.confidenceLevel === "very_high" ? "success" : "warning"}>
-                      {formatConfidence(d.confidenceScore)}
-                    </Badge>
-                    <span className="text-2xs text-text-muted">
-                      {formatRelativeTime(d.createdAt)}
-                    </span>
-                  </div>
+        {/* MongoDB Stats Panel */}
+        <Card padding="none">
+          <div className="p-4 border-b border-border">
+            <CardTitle>MongoDB Atlas Store Stats</CardTitle>
+          </div>
+          <div className="p-4 space-y-3.5">
+            {[
+              { label: "Decisions (Memory Vectors)", count: mongoStats?.decisions ?? 0, color: "bg-accent" },
+              { label: "Remediation Actions", count: mongoStats?.actions ?? 0, color: "bg-success" },
+              { label: "Operational State Snapshot", count: mongoStats?.states ?? 0, color: "bg-warning" },
+              { label: "Agent Execution Logs", count: mongoStats?.logs ?? 0, color: "bg-danger" },
+            ].map((item) => (
+              <div key={item.label} className="flex justify-between items-center text-xs">
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${item.color}`} />
+                  <span className="text-text-secondary">{item.label}</span>
                 </div>
-              </Link>
-            ))
-          )}
-        </div>
-      </Card>
+                <span className="font-mono text-text-primary font-bold">{item.count} doc{item.count !== 1 ? 's' : ''}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      {/* Decision timeline (Searchable) */}
+      <SearchableMemory initialDecisions={decisions} />
     </div>
   );
 }

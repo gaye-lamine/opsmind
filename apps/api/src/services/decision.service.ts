@@ -45,7 +45,8 @@ export class DecisionService {
         ...mapDocumentToDecision(r),
         searchScore: r.searchScore,
         searchType: r.searchType,
-        highlightText: formatHighlights((r as any).highlights)
+        highlightText: formatHighlights((r as any).highlights),
+        rerankedByVoyage: (r as any).rerankedByVoyage
       })),
       total: results.length
     };
@@ -86,6 +87,34 @@ export class DecisionService {
         details: log.data ?? {},
         executedAt: String(log.data?.["executedAt"] ?? log.timestamp.toISOString()),
       }));
+  }
+
+  async getSimilarDecisions(id: string, limit: number = 3) {
+    logger.info("Finding similar decisions", { id, limit });
+    const doc = await this.decisionRepo.findById(id);
+    if (!doc) {
+      throw new MemoryError(
+        `Decision ${id} not found`,
+        ERROR_CODES.DECISION_NOT_FOUND,
+        { decisionId: id }
+      );
+    }
+
+    const embedding = doc.embedding;
+    if (!embedding || embedding.length === 0) {
+      logger.warn("Decision has no embedding vector stored. Cannot perform vector similarity search.", { id });
+      return { items: [], total: 0 };
+    }
+
+    const results = await this.decisionRepo.findSimilarToEmbedding(embedding, limit, id);
+    return {
+      items: results.map(r => ({
+        ...mapDocumentToDecision(r),
+        searchScore: r.similarityScore,
+        searchType: "vector" as const
+      })),
+      total: results.length
+    };
   }
 }
 

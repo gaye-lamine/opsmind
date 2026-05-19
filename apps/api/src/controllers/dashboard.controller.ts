@@ -29,4 +29,22 @@ export class DashboardController {
       next(err);
     }
   };
+
+  /**
+   * GET /api/dashboard/mongodb-stats
+   * Returns live MongoDB document counts.
+   */
+  getMongoDbStats = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const requestId = req.headers["x-request-id"] as string | undefined;
+      const stats = await this.service.getMongoDbStats();
+      res.json(successResponse({ stats }, { requestId }));
+    } catch (err) {
+      next(err);
+    }
+  };
 }

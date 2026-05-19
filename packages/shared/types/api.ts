@@ -95,6 +95,7 @@ export interface DecisionSummary {
   searchScore?: number;
   searchType?: "text" | "vector" | "hybrid";
   highlightText?: string;
+  rerankedByVoyage?: boolean;
 }
 
 export interface DecisionDetailResponse {

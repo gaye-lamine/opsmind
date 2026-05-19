@@ -23,7 +23,7 @@
     "mongodb"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "eslint": "^10.3.0",
     "prettier": "^3.8.3",

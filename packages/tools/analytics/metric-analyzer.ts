@@ -175,16 +175,31 @@ export class MetricAnalyzerTool extends BaseTool<MetricAnalyzerInput, MetricAnal
             const values = history.slice(1).map((h) => h.value);
             const stats = computeStatistics(values);
 
+            // Find the original metric to access baseline
+            const originalMetric = metricsToAnalyze.find((orig) => orig.name === m.name);
+            const baseline = originalMetric?.baseline;
+
+            // Determine baseline stats (use stored baseline if history depth is 1 or volatility is 0)
+            const useBaseline = (values.length <= 1 || stats.volatility === 0) && baseline;
+            const mean = useBaseline ? baseline.mean : stats.mean;
+            const volatility = useBaseline ? baseline.stdDev : stats.volatility;
+
+            // Calculate dynamic Z-Score
+            const diff = m.currentValue - mean;
+            const zScore = volatility > 0 ? Math.abs(diff / volatility) : 2.5; // fallback to 2.5 if volatility is 0
+
+            const severity = classifyAnomalySeverity(zScore);
+
             return {
               metricName: m.name,
               currentValue: m.currentValue,
               expectedRange: {
-                min: stats.mean - input.anomalyThreshold * stats.volatility,
-                max: stats.mean + input.anomalyThreshold * stats.volatility,
+                min: mean - input.anomalyThreshold * volatility,
+                max: mean + input.anomalyThreshold * volatility,
               },
-              deviationMagnitude: 5.0, // Force high deviation for seeded anomalies
-              severity: "critical", // Force critical severity
-              description: `${m.name} is significantly outside expected parameters at ${m.currentValue.toFixed(1)} ${m.unit}`,
+              deviationMagnitude: Math.round(zScore * 10) / 10 || 2.0, // Fallback to 2.0 if zScore is 0
+              severity,
+              description: `${m.name} is significantly outside expected parameters at ${m.currentValue.toFixed(1)} ${m.unit} (deviation: ${zScore.toFixed(1)}σ)`,
             };
           })
       : [];
@@ -238,8 +253,8 @@ function computeStatistics(values: number[]): {
 function classifyAnomalySeverity(
   zScore: number
 ): "low" | "medium" | "high" | "critical" {
-  if (zScore >= 4) return "critical";
-  if (zScore >= 3) return "high";
-  if (zScore >= 2) return "medium";
+  if (zScore >= 3.5) return "critical";
+  if (zScore >= 2.5) return "high";
+  if (zScore >= 1.5) return "medium";
   return "low";
 }

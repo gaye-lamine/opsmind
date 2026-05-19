@@ -39,6 +39,11 @@ export type {
 } from "../types/decision";
 
 export type {
+  Playbook,
+  PlaybookStep,
+} from "../types/playbook";
+
+export type {
   OperationalState,
   BusinessMetric,
   DetectedAnomaly,

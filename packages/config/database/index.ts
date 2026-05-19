@@ -46,6 +46,7 @@ export const COLLECTION_NAMES = {
   SESSIONS: "sessions",
   STATE: "operational_state",
   LOGS: "execution_logs",
+  PLAYBOOKS: "remediation_playbooks",
 } as const;
 
 export type CollectionName =

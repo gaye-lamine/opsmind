@@ -78,6 +78,15 @@ export {
   type InsertExecutionLogDocument,
 } from "../collections/logs/schema";
 
+export {
+  playbookDocumentSchema,
+  insertPlaybookSchema,
+  updatePlaybookSchema,
+  type PlaybookDocument,
+  type InsertPlaybookDocument,
+  type UpdatePlaybookDocument,
+} from "../collections/playbooks/schema";
+
 // ─── Repositories ─────────────────────────────────────────────────────────────
 export {
   BaseRepository,
@@ -90,6 +99,7 @@ export { SessionRepository } from "../repositories/session.repository";
 export { OperationalStateRepository } from "../repositories/state.repository";
 export { ActionRepository } from "../repositories/action.repository";
 export { ExecutionLogRepository } from "../repositories/log.repository";
+export { PlaybookRepository } from "../repositories/playbook.repository";
 
 // ─── Memory Engine ────────────────────────────────────────────────────────────
 export {

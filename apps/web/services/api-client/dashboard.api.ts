@@ -8,4 +8,7 @@ import type { DashboardStateResponse } from "@opsmind/shared";
 export const dashboardApi = {
   getState: () =>
     apiClient.get<DashboardStateResponse>("/dashboard"),
+
+  getMongoStats: () =>
+    apiClient.get<{ stats: Record<string, number> }>("/dashboard/mongodb-stats"),
 };

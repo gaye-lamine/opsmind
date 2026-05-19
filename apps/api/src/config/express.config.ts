@@ -57,6 +57,7 @@ export function createApp(): Application {
   // Dashboard — single endpoint, inline controller
   const dashboardController = new DashboardController();
   app.get("/api/dashboard", dashboardController.getDashboardState);
+  app.get("/api/dashboard/mongodb-stats", dashboardController.getMongoDbStats);
 
   // ── 404 Handler ──────────────────────────────────────────────────────────────
   app.use((_req, res) => {

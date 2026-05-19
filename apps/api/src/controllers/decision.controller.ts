@@ -50,6 +50,51 @@ export class DecisionController {
               createdAt: d.createdAt.toISOString(),
               searchScore: (d as any).searchScore,
               searchType: (d as any).searchType,
+              highlightText: (d as any).highlightText,
+              rerankedByVoyage: (d as any).rerankedByVoyage,
+            })),
+            total: result.total,
+          },
+          { requestId }
+        )
+      );
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  /**
+   * GET /api/decisions/:id/similar
+   * Finds decisions similar to this one using Vector Search.
+   */
+  getSimilarDecisions = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { id } = req.params as { id: string };
+      const limit = parseInt(req.query.limit as string) || 3;
+      const requestId = req.headers["x-request-id"] as string | undefined;
+
+      const result = await this.service.getSimilarDecisions(id, limit);
+
+      res.json(
+        successResponse(
+          {
+            decisions: result.items.map((d) => ({
+              id: d.id,
+              sessionId: d.sessionId,
+              goal: d.goal,
+              category: d.category,
+              status: d.status,
+              confidenceLevel: d.confidenceLevel,
+              confidenceScore: d.confidenceScore,
+              summary: d.summary,
+              recommendationCount: d.recommendations.length,
+              createdAt: d.createdAt.toISOString(),
+              searchScore: (d as any).searchScore,
+              searchType: (d as any).searchType,
             })),
             total: result.total,
           },

@@ -40,3 +40,12 @@ coverage/
 
 # Misc
 *.pem
+
+# Demo & scratch files — not part of the production project
+scratch/
+*.srt
+*.ass
+hackaton.txt
+GITLAB_RESSOURSE.txt
+ressource.mongoDb.txt
+opsmind-img/

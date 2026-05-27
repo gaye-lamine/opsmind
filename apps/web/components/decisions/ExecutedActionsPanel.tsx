@@ -208,6 +208,7 @@ function ActionExecutionCard({
 }) {
   const isPubSub = action.system === "google-cloud-pubsub";
   const isMongoDB = action.system === "mongodb-atlas";
+  const isGitLab = action.system === "gitlab";
 
   const messageId = action.details["messageId"] !== undefined
     ? String(action.details["messageId"])
@@ -224,6 +225,11 @@ function ActionExecutionCard({
   const title = action.details["title"] !== undefined
     ? String(action.details["title"])
     : null;
+  const webUrl = action.details["webUrl"] !== undefined
+    ? String(action.details["webUrl"])
+    : action.details["web_url"] !== undefined
+      ? String(action.details["web_url"])
+      : null;
 
   // Build the structured payload for display
   const payload = isPubSub ? {
@@ -303,6 +309,22 @@ function ActionExecutionCard({
                 </code>
               </div>
             )}
+            {webUrl && (
+              <div className="flex items-center gap-1.5">
+                <span className="text-2xs text-text-muted uppercase tracking-wide">GitLab Issue</span>
+                <a
+                  href={webUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-2xs text-orange-400 hover:text-orange-300 font-mono bg-orange-400/5 hover:bg-orange-400/10 px-1.5 py-0.5 rounded border border-orange-400/20 transition-all flex items-center gap-1"
+                >
+                  View Issue
+                  <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                  </svg>
+                </a>
+              </div>
+            )}
             {metric && (
               <div className="flex items-center gap-1.5">
                 <span className="text-2xs text-text-muted uppercase tracking-wide">Metric</span>
@@ -355,7 +377,7 @@ function ActionExecutionCard({
             <div className="mt-2 rounded-md bg-surface-1 border border-border overflow-hidden">
               <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-surface-2">
                 <span className="text-2xs text-text-muted font-mono">
-                  {isPubSub ? "Pub/Sub Message Payload" : isMongoDB ? "MongoDB Atlas Update" : "Execution Details"}
+                  {isPubSub ? "Pub/Sub Message Payload" : isMongoDB ? "MongoDB Atlas Update" : isGitLab ? "GitLab Issue Specs" : "Execution Details"}
                 </span>
                 <span className="text-2xs text-success">✓ delivered</span>
               </div>
@@ -413,6 +435,10 @@ function SystemBadge({ system }: { system: string }) {
     "mongodb-atlas": {
       label: "MongoDB Atlas",
       color: "text-green-400 bg-green-400/10 border border-green-400/20",
+    },
+    "gitlab": {
+      label: "GitLab",
+      color: "text-orange-400 bg-orange-400/10 border border-orange-400/20",
     },
     "opsmind-agent-api": {
       label: "OpsMind Agent",

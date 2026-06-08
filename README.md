@@ -27,12 +27,18 @@ The system reasons through the problem **autonomously** — it does not wait for
 | Component | Technology |
 |---|---|
 | AI Reasoning | **Google Gemini 2.5 Pro** |
-| AI Platform | **Google Cloud Agent Builder** |
+| AI Platform | **Google Cloud Agent Builder (Discovery Engine)** |
+| Runbook Search | **`@google-cloud/discoveryengine` SDK** |
 | Operational Memory | **MongoDB Atlas** |
 | Vector Search | MongoDB Atlas Vector Search |
+| Semantic Reranking | **Voyage AI rerank-2** |
+| GitLab Integration | **GitLab Duo MCP Server** |
+| Event Streaming | **Google Cloud Pub/Sub** |
 | Backend | Node.js, Express, TypeScript |
 | Frontend | Next.js 15, React 19, Tailwind CSS |
+| Deployment | Google Cloud Run + Secret Manager |
 | Build | Turborepo, pnpm workspaces |
+
 
 ---
 
@@ -149,7 +155,10 @@ OpsMind is fully conteneurised and optimized for production hosting:
 ## Hackathon Focus
 
 Built for the **Google Cloud Rapid Agent Hackathon** with focus on:
-- **Agentic AI systems** using the official Google GenAI SDK (`@google/genai`) and Gemini 1.5 Pro.
-- **Enterprise-grade Partner Integrations** with MongoDB Atlas and GitLab.
-- **Persistent AI memory systems** using MongoDB as a semantic experience ledger.
+- **Agentic AI systems** using the official Google GenAI SDK and **Gemini 2.5 Pro** as the reasoning engine.
+- **Google Cloud Agent Builder** (`@google-cloud/discoveryengine`) used at runtime to search operational runbooks during the Planning step.
+- **Enterprise-grade Partner Integrations** with MongoDB Atlas (official MCP server) and GitLab (GitLab Duo MCP server).
+- **Persistent AI memory systems** using MongoDB Atlas as a semantic experience ledger with Vector Search + Hybrid Search + Voyage AI reranking.
 - **Multi-step reasoning loops** with mandatory critique and reflection.
+- **Real autonomous actions**: GitLab issues created automatically, Google Cloud Pub/Sub alerts dispatched upon critical findings.
+

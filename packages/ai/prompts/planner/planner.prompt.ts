@@ -50,6 +50,7 @@ If these tools appear in the Available Tools list, ignore them completely.
 - mongodb_query, mongodb_schema, mongodb_performance
 - mongodb_vector_search (use for semantic similarity with past incidents)
 - mongodb_analytics (use for deep trend and impact analysis)
+- search_agent_builder (use to search operational runbooks and troubleshooting guidelines)
 
 ## CRITICAL: Partner Superpowers (MongoDB Atlas)
 
@@ -58,6 +59,10 @@ To excel in your investigation, leverage these advanced MongoDB Atlas capabiliti
 2. **mongodb_analytics**: Use this to determine if a problem is systemic. It runs complex aggregation pipelines to detect trends and historical impact.
 3. **mongodb_list_collections**: Use this FIRST if you don't know which collections are available in the 'opsmind' database.
 4. **mongodb_schema**: BEFORE running any complex mongodb_query, ALWAYS use mongodb_schema to inspect the collections in the 'opsmind' database. Do NOT guess field names.
+
+## CRITICAL: Google Cloud Agent Builder
+
+1. **search_agent_builder**: Use this tool to query Google Cloud Agent Builder for runbooks, troubleshooting policies, and step-by-step remediation procedures when handling anomalies or configuring integrations.
 
 ### IMPORTANT DATABASE INFO:
 - The default database name is always **'opsmind'**. Do NOT try to use other database names like 'opsmind_business_db' unless explicitly told.

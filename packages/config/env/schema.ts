@@ -35,6 +35,13 @@ export const envSchema = z.object({
   GOOGLE_CLOUD_LOCATION: z.string().default("us-central1"),
   GOOGLE_APPLICATION_CREDENTIALS: z.string().optional(),
 
+  // Google Cloud Agent Builder (Discovery Engine)
+  AGENT_BUILDER_PROJECT_ID: z.string().optional(),
+  AGENT_BUILDER_LOCATION: z.string().default("global"),
+  AGENT_BUILDER_COLLECTION: z.string().default("default_collection"),
+  AGENT_BUILDER_ENGINE_ID: z.string().optional(),
+  AGENT_BUILDER_SERVING_CONFIG: z.string().default("default_search"),
+
   // Agent Runtime
   AGENT_MAX_STEPS: z.coerce.number().int().positive().default(10),
   AGENT_REFLECTION_ENABLED: z

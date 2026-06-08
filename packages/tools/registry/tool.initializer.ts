@@ -6,6 +6,7 @@ import { UpdateMemoryTool } from "../mongodb/update-memory/index";
 import { ActionLogTool } from "../mongodb/action-log/index";
 import { MetricAnalyzerTool } from "../analytics/metric-analyzer";
 import { DecisionRetrieverTool } from "../business/decision-retriever";
+import { AgentBuilderSearchTool } from "../business/agent-builder-search.tool";
 import { MongoDbQueryTool } from "../mongodb-mcp/mongodb-query.tool";
 import { MongoDbSchemaTool } from "../mongodb-mcp/mongodb-schema.tool";
 import { MongoDbPerformanceTool } from "../mongodb-mcp/mongodb-performance.tool";
@@ -46,6 +47,7 @@ export function initializeTools(): void {
 
   // ─── Business Intelligence Tools ──────────────────────────────────────────
   registry.register(new DecisionRetrieverTool());
+  registry.register(new AgentBuilderSearchTool());
 
   // ─── MongoDB Atlas MCP Tools (via official MongoDB MCP Server) ────────────
   registry.register(new MongoDbQueryTool());

@@ -3,6 +3,8 @@ import { PlaybookRepository, DecisionRepository } from "@opsmind/memory";
 import { type Playbook } from "@opsmind/shared";
 import { getGeminiClient } from "@opsmind/ai";
 import { z } from "zod";
+import { getToolRegistry } from "@opsmind/tools";
+
 
 const logger = createLogger("PlaybookService");
 
@@ -205,12 +207,56 @@ Rule:
       throw new MemoryError(`Step ${stepId} is not auto-remediable`, ERROR_CODES.ACTION_NOT_FOUND);
     }
 
-    // Execute (Simulated execution with detailed logging)
+    // Execute (REAL execution with detailed logging via ToolRegistry)
     logger.info(`Running auto-remediation: ${step.title}`, { actionType: step.actionType, details: step.details });
+    
+    try {
+      const registry = getToolRegistry();
+      let toolName: string | null = null;
+      let toolInput: Record<string, any> = {};
+
+      if (step.actionType === "gitlab_issue_create" || step.actionType === "create_gitlab_issue") {
+        toolName = "create_gitlab_issue";
+        toolInput = {
+          title: step.details?.title || step.title || "Remediation Action Required",
+          description: step.details?.description || step.description || "Action description",
+          severity: step.details?.severity || "medium"
+        };
+      } else if (step.actionType === "publish_alert" || step.actionType === "publish_pubsub_alert") {
+        toolName = "publish_alert";
+        toolInput = {
+          severity: step.details?.severity || "high",
+          message: step.details?.message || step.description || "Alert message",
+          category: step.details?.category || "operations",
+          metricName: step.details?.metricName || "system_metric",
+          currentValue: step.details?.currentValue || 0,
+          thresholdValue: step.details?.thresholdValue || 0
+        };
+      }
+
+      if (toolName && registry.has(toolName)) {
+        logger.info(`Routing playbook step to real tool: ${toolName}`, { toolInput });
+        const toolResult = await registry.execute(toolName, toolInput);
+        if (!toolResult.success) {
+          logger.error(`Playbook step execution failed on tool ${toolName}: ${toolResult.error?.message}`);
+          throw new Error(toolResult.error?.message || `Execution of tool ${toolName} failed.`);
+        }
+        logger.info(`Playbook step execution succeeded on tool ${toolName}`, { data: toolResult.data });
+      } else {
+        logger.warn(`No real tool registered matches actionType: ${step.actionType}. Running simulation fallback.`);
+      }
+    } catch (e) {
+      logger.error("Error executing real action for playbook step", e);
+      throw new MemoryError(
+        `Failed to execute automated action for playbook step: ${e instanceof Error ? e.message : String(e)}`,
+        ERROR_CODES.AGENT_REASONING_FAILED
+      );
+    }
     
     // Set step status to completed
     playbook.steps[stepIndex].status = "completed";
     playbook.updatedAt = new Date();
+
 
     // Check if all steps are now completed
     const allCompleted = playbook.steps.every(s => s.status === "completed" || s.status === "skipped");

@@ -65,6 +65,7 @@ export { MetricAnalyzerTool } from "../analytics/metric-analyzer";
 
 // ─── Business Tools ───────────────────────────────────────────────────────────
 export { DecisionRetrieverTool } from "../business/decision-retriever";
+export { AgentBuilderSearchTool } from "../business/agent-builder-search.tool";
 
 // ─── MongoDB Atlas MCP Tools ──────────────────────────────────────────────────
 export { MongoDbQueryTool } from "../mongodb-mcp/mongodb-query.tool";

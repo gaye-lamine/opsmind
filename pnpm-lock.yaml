@@ -282,6 +282,9 @@ importers:
 
   packages/tools:
     dependencies:
+      '@google-cloud/discoveryengine':
+        specifier: ^2.7.0
+        version: 2.7.0
       '@google-cloud/pubsub':
         specifier: ^5.3.0
         version: 5.3.0
@@ -521,6 +524,10 @@ packages:
   '@eslint/plugin-kit@0.7.1':
     resolution: {integrity: sha512-rZAP3aVgB9ds9KOeUSL+zZ21hPmo8dh6fnIFwRQj5EAZl9gzR7wxYbYXYysAM8CTqGmUGyp2S4kUdV17MnGuWQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
+
+  '@google-cloud/discoveryengine@2.7.0':
+    resolution: {integrity: sha512-0SZagYs7rCeg5CtIS+BlvyZu+CtwcHk+gfMy9+hjzTeNaOWevMg5504qrGWrskwd997Dg/cVes7T4sXUXrGTxA==}
+    engines: {node: '>=18'}
 
   '@google-cloud/paginator@6.0.0':
     resolution: {integrity: sha512-g5nmMnzC+94kBxOKkLGpK1ikvolTFCC3s2qtE4F+1EuArcJ7HHC23RDQVt3Ra3CqpUYZ+oXNKZ8n5Cn5yug8DA==}
@@ -2766,6 +2773,12 @@ snapshots:
     dependencies:
       '@eslint/core': 1.2.1
       levn: 0.4.1
+
+  '@google-cloud/discoveryengine@2.7.0':
+    dependencies:
+      google-gax: 5.0.6
+    transitivePeerDependencies:
+      - supports-color
 
   '@google-cloud/paginator@6.0.0':
     dependencies:
